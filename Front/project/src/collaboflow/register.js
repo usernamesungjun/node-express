@@ -110,7 +110,7 @@ class Register extends React.Component {
                             <span className="input-group-text" id="inputGroupPrepend"></span>
                             <input
                               type="text"
-                              name="userID"
+                              name="loginId"
                               className="form-control"
                               id="yourID"
                               required
@@ -125,7 +125,7 @@ class Register extends React.Component {
                           </label>
                           <input
                             type="password"
-                            name="password"
+                            name="pw"
                             className="form-control"
                             id="yourPassword"
                             required
