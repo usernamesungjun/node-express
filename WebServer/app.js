@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const authRoutes = require('./routes/authRoutes');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(session({
       maxAge: 1000 * 60 * 60 * 24 // 예를 들어 쿠키 유효 기간을 1일로 설정
     }
   }));
+  app.use(cors())
 
 app.use('', authRoutes);
 

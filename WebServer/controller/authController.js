@@ -4,7 +4,7 @@ const session = require('express-session');
 const jwtHelper = require('../jwt/jwt.js')
 
 exports.signUp = async (req, res) => {
-    const { loginId, name, pw, email } = req.body;
+    const { name, loginId, email, pw } = req.body;
     
     if (await userModel.isUserExist(loginId, email)) {
         return res.status(400).send({ message: 'Login ID or Email already exists.' });
