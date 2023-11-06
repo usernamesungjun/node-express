@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const jwt = require('../jwt/jwt.js'); // 앞서 제공된 JWT 처리 모듈
 const userModel = require('../models/userModel');
 const secretKey = require('../jwt/secretkey').secretKey;
 
@@ -6,36 +6,21 @@ exports.authMiddleware = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const accessToken = authHeader && authHeader.split(' ')[1];
 
-  if (accessToken == null) return res.sendStatus(401); // No token
+  if (!accessToken) return res.sendStatus(401); // No token provided
 
-  try {
-    const decoded = jwt.verify(accessToken, secretKey);
-    req.user = decoded;
-    next(); // Access token is valid
-  } catch (error) {
-    if (error.name === 'TokenExpiredError') {
-      // Token has expired, try to refresh it
-      const user = await userModel.findRefreshToken(accessToken); // Example function to find user by token
-      if (!user) return res.sendStatus(403); // No user found with this token
-
-      const refreshToken = user.refreshToken;
-      if (!refreshToken) return res.sendStatus(403); // No refresh token available
-
-      try {
-        const newDecoded = jwt.verify(refreshToken, secretKey);
-        const newAccessToken = jwt.sign({ id: newDecoded.id }, secretKey, { expiresIn: '1h' });
-        
-        // Update the user's access token in the DB if necessary
-        await userModel.updateAccessToken(newDecoded.id, newAccessToken);
-
-        req.user = newDecoded;
-        req.headers['authorization'] = `Bearer ${newAccessToken}`; // Optional: Update header
-        next();
-      } catch {
-        return res.sendStatus(403); // Refresh token invalid
-      }
-    } else {
-      return res.sendStatus(403); // Access token invalid
-    }
+  const decoded = await jwt.verify(accessToken);
+  if (decoded === jwt.TOKEN_EXPIRED) {
+    // Access Token has expired
+    return res.status(401).json({ error: 'Token expired' });
+  } else if (decoded === jwt.TOKEN_INVALID) {
+    // Token is invalid
+    return res.status(401).json({ error: 'Token invalid' });
+  } else if (decoded instanceof Error) {
+    // Other errors
+    return res.status(400).json({ error: 'Token error' });
   }
+
+  // If the token is valid, set the user object for the next middleware
+  req.user = decoded;
+  next();
 };
