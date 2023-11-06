@@ -3,11 +3,49 @@ import { Link , Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 
 class Login extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      loginId: '',
+      pw: '',
+    };
+  }
+
     goToRegisterPage = () => {
         window.location.href = '/register';
       };
+      handleInputChange = (e) => {
+        const { name, value } = e.target;
+        this.setState({ [name]: value });
+      };
+    
+      handleLogin = (e) => {
+        e.preventDefault();
+    
+        const { loginId, pw } = this.state;
+    
+        // 서버로 로그인 데이터 보내기
+        fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ loginId, pw }),
+        })
+          .then((response) => {
+            if (response.ok) {
+              // 로그인 성공 시
+              // 다른 작업 수행 또는 페이지 이동
+            } else {
+              // 로그인 실패 시
+              // 오류 처리
+            }
+          })
+          .catch((error) => {
+            // 오류 처리
+          });
+      };
 
-      
   render(){
     return (
     <main>
@@ -29,28 +67,46 @@ class Login extends React.Component{
                       <p className="text-center small">Enter your ID & password to login</p>
                     </div>
                     <form className="row g-3 needs-validation" noValidate>
-                      <div className="col-12">
-                        <label htmlFor="yourID" className="form-label">ID</label>
-                        <div className="input-group has-validation">
-                          <span className="input-group-text" id="inputGroupPrepend"></span>
-                          <input type="text" name="userID" className="form-control" id="yourID" required />
-                          <div className="invalid-feedback">Please enter your ID.</div>
+                    <div className="col-12">
+                          <label htmlFor="yourID" className="form-label">
+                            ID
+                          </label>
+                          <div className="input-group has-validation">
+                            <span className="input-group-text" id="inputGroupPrepend"></span>
+                            <input
+                              type="text"
+                              name="loginId"
+                              className="form-control"
+                              id="yourID"
+                              required
+                              onChange={this.handleInputChange}
+                            />
+                            <div className="invalid-feedback">Please enter your ID.</div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-12">
-                        <label htmlFor="yourPassword" className="form-label">Password</label>
-                        <input type="password" name="password" className="form-control" id="yourPassword" required />
-                        <div className="invalid-feedback">Please enter your password!</div>
-                      </div>
-                      <div className="col-12">
-                        <div className="form-check">
+                        <div className="col-12">
+                          <label htmlFor="yourPassword" className="form-label">
+                            Password
+                          </label>
+                          <input
+                            type="password"
+                            name="pw"
+                            className="form-control"
+                            id="yourPassword"
+                            required
+                            onChange={this.handleInputChange}
+                          />
+                          <div className="invalid-feedback">Please enter your password!</div>
+                        </div>
+                        <div className="col-12">
+                          <button className="btn btn-primary w-100" type="submit">
+                            Login
+                          </button>
+                        </div>
+                         {/* <div className="form-check">
                           <input className="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe" />
                           <label className="form-check-label" htmlFor="rememberMe">Remember me</label>
-                        </div>
-                      </div>
-                      <div className="col-12">
-                        <button className="btn btn-primary w-100" type="submit">Login</button>
-                      </div>
+                        </div> */}
                       <div className="col-12">
                         <p className="small mb-0">Don't have an account?{'  '}
                         <button type="button" class="btn btn-link" onClick={this.goToRegisterPage}>Create an account</button>
