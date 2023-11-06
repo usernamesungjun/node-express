@@ -6,6 +6,8 @@ class Login extends React.Component{
     goToRegisterPage = () => {
         window.location.href = '/register';
       };
+
+      
   render(){
     return (
     <main>
