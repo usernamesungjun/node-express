@@ -24,10 +24,68 @@ class Register extends React.Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
+  console.log('Name:', this.state.name);
+  console.log('ID:', this.state.userID);
+  console.log('Email:', this.state.email);
+  console.log('Password:', this.state.password);
+
+  // 서버로 데이터 보내기
+  fetch('https://your-server-endpoint.com/api/register', {
+    method: 'POST', // 또는 다른 HTTP 메서드 (GET, PUT, DELETE 등)
+    headers: {
+      'Content-Type': 'application/json', // 전송 데이터 타입에 따라 변경
+    },
+    body: JSON.stringify(this.state), // 데이터를 JSON 문자열로 변환하여 보냄
+  })
+    .then((response) => {
+      if (response.ok) {
+        // 서버 응답이 성공적인 경우 처리
+        return response.json();
+      } else {
+        // 서버 응답이 실패한 경우 처리
+        throw new Error('Network response was not ok');
+      }
+    })
+    .then((data) => {
+      // 서버로부터 받은 데이터(data)를 처리
+      console.log(data);
+      // 여기에서 다른 작업을 수행할 수 있습니다.
+    })
+    .catch((error) => {
+      // 오류 처리
+      console.error('There was a problem with the fetch operation:', error);
+    });e.preventDefault();
     console.log('Name:', this.state.name);
     console.log('ID:', this.state.userID);
     console.log('Email:', this.state.email);
     console.log('Password:', this.state.password);
+  
+    // 서버로 데이터 보내기
+    fetch('https://your-server-endpoint.com/api/register', {
+      method: 'POST', // 또는 다른 HTTP 메서드 (GET, PUT, DELETE 등)
+      headers: {
+        'Content-Type': 'application/json', // 전송 데이터 타입에 따라 변경
+      },
+      body: JSON.stringify(this.state), // 데이터를 JSON 문자열로 변환하여 보냄
+    })
+      .then((response) => {
+        if (response.ok) {
+          // 서버 응답이 성공적인 경우 처리
+          return response.json();
+        } else {
+          // 서버 응답이 실패한 경우 처리
+          throw new Error('Network response was not ok');
+        }
+      })
+      .then((data) => {
+        // 서버로부터 받은 데이터(data)를 처리
+        console.log(data);
+        // 여기에서 다른 작업을 수행할 수 있습니다.
+      })
+      .catch((error) => {
+        // 오류 처리
+        console.error('There was a problem with the fetch operation:', error);
+      });
   };
 
   render() {
