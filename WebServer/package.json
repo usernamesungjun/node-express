@@ -2,13 +2,13 @@
   "name": "webserver",
   "version": "1.0.0",
   "description": "",
-  "main": "Server.js",
+  "main": "app.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "test": "mocha test",
-    "start": "node server.js"
+    "start": "node app.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,18 +16,21 @@
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
-    "chai-http": "^4.4.0",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "mysql": "^2.18.1",
     "mysql2": "^3.6.2",
+    "rand-token": "^1.0.1",
     "session-file-store": "^1.5.0",
-    "sinon": "^17.0.0",
+    "sinon": "^17.0.1",
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
     "chai": "^4.3.10",
+    "chai-http": "^4.4.0",
+    "http-mockserver": "^2.7.7",
+    "jsonwebtoken": "^9.0.2",
     "mocha": "^10.2.0",
     "nodemon": "^3.0.1",
     "supertest": "^6.3.3"

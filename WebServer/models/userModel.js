@@ -1,16 +1,5 @@
-const mysql = require('mysql');
-const util = require('util');
+const db = require('../db.js')
 const bcrypt = require('bcrypt');
-
-//db연결
-const db = mysql.createConnection({
-    host: '127.0.0.1',
-    user: 'root',
-    password: '9568',
-    database: 'collaboflow_db'
-});
-
-db.query = util.promisify(db.query);
 
 exports.isUserExist = async (loginId, email) => {
   const result = await db.query('SELECT * FROM user WHERE loginId = ? OR email = ?', [loginId, email]);
@@ -28,4 +17,14 @@ exports.findByLoginId = async (loginId) => {
 
 exports.comparePassword = async (inputPassword, hashedPassword) => {
   return bcrypt.compare(inputPassword, hashedPassword);
+};
+
+exports.updateRefreshToken = async (loginId, refreshToken) => {
+  await db.query('UPDATE user SET refreshToken = ? WHERE loginId = ?', [refreshToken, loginId]);
+};
+
+// 사용자 ID로 refreshToken을 조회하는 기능을 추가합니다.
+exports.findRefreshToken = async (loginId) => {
+  const result = await db.query('SELECT refreshToken FROM user WHERE loginId = ?', [loginId]);
+  return result.length > 0 ? result[0].refreshToken : null;
 };
