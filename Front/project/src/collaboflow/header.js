@@ -1,9 +1,6 @@
-import React, {useState} from 'react';
-import { Button, Modal } from 'react-bootstrap';
-import CreateProjectModal from './CreateProjectModal';
+import React, { useState , Component } from 'react';
 import Logoimg from "./CollaboFlow-remove.png";
 import 'bootstrap/dist/css/bootstrap.css';
-
 class Header extends React.Component {
   
   
@@ -16,26 +13,53 @@ class Header extends React.Component {
 
     this.state = {
       showProjectDropdown: false,
-      showCreateProjectModal: false,
-      loggedIn: true,//로그인 상태
-      selectedProject: '', // 선택된 프로젝트 이름
-      userProjects: [], // 사용자의 프로젝트 목록
+      loggedIn: true,
+      selectedProject: '',
+      userProjects: [],
+      showNewProjectModal: false,//test
+      newProjectData: {
+        projectName: '',
+        emailList: '',
+      },//test
     };
   }
+  handleShowNewProjectModal = () => {
+    this.setState({
+      showNewProjectModal: true,
+    });
+  };
 
+  handleCloseNewProjectModal = () => {
+    this.setState({
+      showNewProjectModal: false,
+    });
+  };
+
+  handleNewProjectDataChange = (e) => {
+    const { name, value } = e.target;
+    this.setState((prevState) => ({
+      newProjectData: {
+        ...prevState.newProjectData,
+        [name]: value,
+      },
+    }));
+  };
+  handleSaveProjectData = () => {
+    const { newProjectData } = this.state;
+    
+    // 이곳에서 newProjectData를 사용하여 데이터를 저장하고 처리할 수 있습니다.
+    console.log('New Project Data:', newProjectData);
+  
+    // 모달을 닫습니다.
+    this.handleCloseNewProjectModal();
+  };
+  
   handleProjectDropdown = () => {
     this.setState((prevState) => ({
       showProjectDropdown: !prevState.showProjectDropdown,
     }));
   };
 
-  handleShowCreateProjectModal = () => {
-    this.setState({ showCreateProjectModal: true });
-  };
-
-  handleCloseCreateProjectModal = () => {
-    this.setState({ showCreateProjectModal: false });
-  };
   componentDidMount() {
     // 서버에서 선택된 프로젝트와 사용자의 프로젝트 목록 데이터 가져오기
 
@@ -89,18 +113,35 @@ class Header extends React.Component {
             type="button"
             className="create-project"
             class="btn btn-light btn-default"
-            onClick={this.handleShowCreateProjectModal} // 모달 열기
+            onClick={this.handleShowNewProjectModal}
           >
             프로젝트 생성
           </button>
           </ul>
         </div>
-        {/* CreateProjectModal을 렌더링하고 필요한 상태와 핸들러를 전달 */}
-        {this.state.showCreateProjectModal && (
-          <CreateProjectModal
-            show={this.state.showCreateProjectModal}
-            onHide={this.handleCloseCreateProjectModal}
-          />
+        {this.state.showNewProjectModal && (
+          <div className="new-project-modal">
+            <div className="new-project-content">
+              <p>프로젝트 이름:</p>
+              <input
+                type="text"
+                name="projectName"
+                value={this.state.newProjectData.projectName}
+                onChange={this.handleNewProjectDataChange}
+              />
+              <p>초대할 팀원의 e-Mail (쉼표로 구분):</p>
+              <input
+                type="text"
+                name="emailList"
+                value={this.state.newProjectData.emailList}
+                onChange={this.handleNewProjectDataChange}
+              />
+              <div className="modal-btns">
+                <button type="button" class="btn btn-danger" onClick={this.handleCloseNewProjectModal}>닫기</button>
+                <button type="button" class="btn btn-info" onClick={this.handleSaveProjectData}>저장</button>
+              </div>
+            </div>
+          </div>
         )}
         <div className="header-right">
           {this.state.loggedIn ? (
@@ -108,7 +149,7 @@ class Header extends React.Component {
           ) : (
             <button type="button" className='login' class="btn btn-info" onClick={this.goToLoginPage}>Login</button>
           )}
-          <button type="button" className='mypage' class="btn btn-primary">Mypage</button>
+          <button type="button" className='mypage' class="btn btn-primary" >Mypage</button>
         </div>
       </header>
     );
