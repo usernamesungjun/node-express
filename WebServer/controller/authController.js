@@ -5,6 +5,7 @@ const jwtHelper = require('../jwt/jwt.js')
 
 exports.signUp = async (req, res) => {
     const { name, loginId, email, pw } = req.body;
+    console.log(req.body);
     
     if (await userModel.isUserExist(loginId, email)) {
         return res.status(400).send({ message: 'Login ID or Email already exists.' });
@@ -22,6 +23,7 @@ exports.signUp = async (req, res) => {
 
 exports.login = async (req, res) => {
     const { loginId, pw } = req.body;
+    console.log(req.body);
 
     const user = await userModel.findByLoginId(loginId);
 

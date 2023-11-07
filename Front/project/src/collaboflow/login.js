@@ -34,16 +34,18 @@ class Login extends React.Component{
         })
           .then((response) => {
             if (response.ok) {
-              // 로그인 성공 시
+              console.log(response.body);
+              return response.json();
               // 다른 작업 수행 또는 페이지 이동
             } else {
-              // 로그인 실패 시
+              throw new Error('Network response was not ok');
               // 오류 처리
             }
           })
           .catch((error) => {
             // 오류 처리
-          });
+            console.error('There was a problem with the fetch operation:', error);
+          });e.preventDefault();
       };
 
   render(){
@@ -99,7 +101,7 @@ class Login extends React.Component{
                           <div className="invalid-feedback">Please enter your password!</div>
                         </div>
                         <div className="col-12">
-                          <button className="btn btn-primary w-100" type="submit">
+                          <button className="btn btn-primary w-100" type="submit" onClick={this.handleLogin}> 
                             Login
                           </button>
                         </div>
