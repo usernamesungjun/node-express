@@ -32,23 +32,31 @@ exports.createProject = async (req, res) => {
 
 exports.getUserProjects = async (req, res) => {
   try {
-    const {userId} = req.query
-    console.log(1,req.query)
+    const { userId } = req.query;
+    console.log(1, req.query);
 
-    const isUserId = await UserModel.isUserExist(userId)
-    if(!isUserId) return res.status(404).send({ message: '존재하지 않는 userId입니다. ' });
+    const isUserId = await UserModel.isUserExist(userId);
+    if (!isUserId) return res.status(404).send({ message: '존재하지 않는 userId입니다.' });
 
     const projectIds = await JoinProjectModel.findProjectsByUserId(userId);
-    console.log(2,projectIds)
-    
-    const projects = await Promise.all(
-      projectIds.map(projectIds => ProjectModel.findProjectNameById(projectIds))
-    );
-    console.log(3,projects)
+    console.log(2, projectIds);
 
+    const projectsData = await Promise.all(
+      projectIds.map(projectId => ProjectModel.findProjectNameById(projectId))
+    );
+
+    // If findProjectNameById returns a RowDataPacket, you would need to extract just the data:
+    const projects = projectsData.map(projectData => {
+      // Assuming projectData is a RowDataPacket with a 'projectName' property.
+      return { projectName: projectData.projectName };
+    });
+
+    console.log(3, projects);
+
+    // This will send an array of objects with just the projectName to the client.
     res.json(projects);
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: 'Server error while retrieving projects' });
   }
-}
+};
