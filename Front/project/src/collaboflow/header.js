@@ -137,13 +137,29 @@ handleEmailChange = (index, value) => {
     }));
   };
 
-  componentDidMount() {
-    // 서버에서 선택된 프로젝트와 사용자의 프로젝트 목록 데이터 가져오기
-
-    this.setState({
-      selectedProject: '창의융합종합설계', // 선택된 프로젝트 이름
-      userProjects: ['디자인패턴', '컴퓨터비전', '다른 프로젝트 이름들'], // 사용자의 프로젝트 목록
-    });
+  componentDidMount() { // test
+    // this.setState({
+    //   selectedProject: '창의융합종합설계', // 선택된 프로젝트 이름
+    //   userProjects: ['디자인패턴', '컴퓨터비전', '다른 프로젝트 이름들'], // 사용자의 프로젝트 목록
+    // });
+    
+    // 서버에서 프로젝트 데이터를 가져오는 요청
+    fetch('프로젝트 데이터를 가져올 서버 엔드포인트 URL')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('네트워크 응답이 올바르지 않습니다');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // 가져온 데이터로 userProjects 상태를 업데이트
+        this.setState({
+          userProjects: data.projects, // 실제 서버 응답 데이터 필드로 'data.projects'를 대체하세요
+        });
+      })
+      .catch((error) => {
+        console.error('에러:', error);
+      });
   }
   // 프로젝트를 선택할 때 실행되는 핸들러
   handleProjectSelect = (projectName) => {
