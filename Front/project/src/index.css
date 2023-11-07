@@ -402,7 +402,7 @@ h6 {
   
 }
 .new-project-modal {
-  height: 50vh; /* 원하는 높이 값으로 조절하세요 (예: 80vh) */
+  height: 60vh; /* 원하는 높이 값으로 조절하세요 (예: 80vh) */
 }
 
 .new-project-content {
@@ -412,9 +412,10 @@ h6 {
   justify-content: space-between;
 }
 .new-project-content {
+  text-align: left;
   border: 2px solid #000;
   background: #fff;
-  padding: 20px;
+  padding: 3%;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   color: #000;

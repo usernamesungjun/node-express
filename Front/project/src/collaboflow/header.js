@@ -19,10 +19,48 @@ class Header extends React.Component {
       showNewProjectModal: false,//test
       newProjectData: {
         projectName: '',
-        emailList: '',
-      },//test
+        teamMembers: [''],
+      },
     };
   }
+ // 새 이메일 필드 추가
+addEmailField = () => {
+  if (this.state.newProjectData.teamMembers.length < 3) {
+    this.setState((prevState) => ({
+      newProjectData: {
+        ...prevState.newProjectData,
+        teamMembers: [...prevState.newProjectData.teamMembers, ''],
+      },
+    }));
+  }
+};
+
+// 이메일 필드 제거
+removeEmailField = (index) => {
+  if (this.state.newProjectData.teamMembers.length > 1) {
+    const updatedTeamMembers = [...this.state.newProjectData.teamMembers];
+    updatedTeamMembers.splice(index, 1);
+    this.setState((prevState) => ({
+      newProjectData: {
+        ...prevState.newProjectData,
+        teamMembers: updatedTeamMembers,
+      },
+    }));
+  }
+};
+
+// 이메일 필드의 값 업데이트
+handleEmailChange = (index, value) => {
+  const updatedTeamMembers = [...this.state.newProjectData.teamMembers];
+  updatedTeamMembers[index] = value;
+  this.setState((prevState) => ({
+    newProjectData: {
+      ...prevState.newProjectData,
+      teamMembers: updatedTeamMembers,
+    },
+  }));
+};
+
   handleShowNewProjectModal = () => {
     this.setState({
       showNewProjectModal: true,
@@ -44,15 +82,43 @@ class Header extends React.Component {
       },
     }));
   };
+  
   handleSaveProjectData = () => {
     const { newProjectData } = this.state;
-    
-    // 이곳에서 newProjectData를 사용하여 데이터를 저장하고 처리할 수 있습니다.
-    console.log('New Project Data:', newProjectData);
+    // 서버로 전송할 데이터 준비
+    const dataToSend = {
+      projectName: newProjectData.projectName,
+      teamMembers: newProjectData.teamMembers.filter(member => member.trim() !== ''), // 빈 문자열 필터링
+    };
   
-    // 모달을 닫습니다.
-    this.handleCloseNewProjectModal();
+    // POST 요청을 보내는 옵션 설정
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToSend), // 데이터를 JSON 문자열로 변환
+    };
+  
+    // 서버 엔드포인트 URL 설정
+    const serverEndpoint = 'http://your-server-endpoint-url'; // 실제 서버 URL로 변경
+  
+    fetch(serverEndpoint, requestOptions)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json(); // 서버의 응답을 JSON으로 파싱
+      })
+      .then((data) => {
+        // 서버의 응답을 처리
+        console.log('서버 응답:', data);
+        // 필요한 처리를 추가하세요.
+      })
+      .catch((error) => {
+        console.error('서버 요청 에러:', error);
+      });
+    this.handleCloseNewProjectModal(); // 모달을 닫습니다.
   };
+  
   
   handleProjectDropdown = () => {
     this.setState((prevState) => ({
@@ -122,20 +188,31 @@ class Header extends React.Component {
         {this.state.showNewProjectModal && (
           <div className="new-project-modal">
             <div className="new-project-content">
-              <p>프로젝트 이름:</p>
+              <p>프로젝트 이름</p>
               <input
                 type="text"
                 name="projectName"
                 value={this.state.newProjectData.projectName}
                 onChange={this.handleNewProjectDataChange}
               />
-              <p>초대할 팀원의 e-Mail (쉼표로 구분):</p>
-              <input
-                type="text"
-                name="emailList"
-                value={this.state.newProjectData.emailList}
-                onChange={this.handleNewProjectDataChange}
-              />
+              <p>초대할 팀원의 e-Mail</p>
+                {this.state.newProjectData.teamMembers.map((email, index) => (
+                  <div key={index}>
+                    <input
+                      type="text"
+                      name={`email-${index}`}
+                      value={email}
+                      onChange={(e) => this.handleEmailChange(index, e.target.value)}
+                    />
+                    {index > 0 && (
+                      <button type="button" class="btn btn-danger btn-sm" onClick={() => this.removeEmailField(index)}>
+                        X
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button type="button"  class="btn btn-info" onClick={this.addEmailField}>팀원+</button>
+
               <div className="modal-btns">
                 <button type="button" class="btn btn-danger" onClick={this.handleCloseNewProjectModal}>닫기</button>
                 <button type="button" class="btn btn-info" onClick={this.handleSaveProjectData}>저장</button>
