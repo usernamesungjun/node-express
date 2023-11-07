@@ -17,7 +17,7 @@ class Header extends React.Component {
     this.state = {
       showProjectDropdown: false,
       showCreateProjectModal: false,
-      loggedIn: false,
+      loggedIn: true,//로그인 상태
       selectedProject: '', // 선택된 프로젝트 이름
       userProjects: [], // 사용자의 프로젝트 목록
     };
@@ -104,7 +104,7 @@ class Header extends React.Component {
         )}
         <div className="header-right">
           {this.state.loggedIn ? (
-            <button type="button" className='logout' class="btn btn-danger">Logout</button>
+            <button type="button" className='logout' class="btn btn-danger" onClick={this.goToLoginPage}>Logout</button>
           ) : (
             <button type="button" className='login' class="btn btn-info" onClick={this.goToLoginPage}>Login</button>
           )}
