@@ -46,7 +46,7 @@ exports.getUserProjects = async (req, res) => {
     );
     console.log(3,projects)
 
-    res.json(projects.map(projectName => ({ projectName })));
+    res.json(projects);
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: 'Server error while retrieving projects' });

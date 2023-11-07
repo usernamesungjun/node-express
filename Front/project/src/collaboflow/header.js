@@ -147,7 +147,9 @@ handleEmailChange = (index, value) => {
     // 서버에서 프로젝트 데이터를 가져오는 요청
     const userId = this.state.userId; // userId 가져오기
 
-      fetch(`프로젝트 데이터를 가져올 서버 엔드포인트 URL?userId=${userId}`)
+    const url = `http://localhost:3000/getProjects?userId=${encodeURIComponent(userId)}`
+
+      fetch(url)
         .then((response) => {
           if (!response.ok) {
             throw new Error('네트워크 응답이 올바르지 않습니다');
@@ -160,6 +162,7 @@ handleEmailChange = (index, value) => {
             userProjects: data.projectName,
             loading: false,
           });
+          console.log(data.projectName)
         })
         .catch((error) => {
           console.error('에러:', error);
