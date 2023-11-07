@@ -14,8 +14,8 @@ class Header extends React.Component {
     this.state = {
       showProjectDropdown: false,
       loggedIn: true,
-      selectedProject: '',
       userProjects: [],
+      selectedProject: this.state.userProjects[0] || '',
       userId: localStorage.getItem('userId') || '',//로그인된 유저ID 가져오기
       showNewProjectModal: false,//test
       newProjectData: {
