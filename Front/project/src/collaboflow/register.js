@@ -45,6 +45,8 @@ class Register extends React.Component {
     .then((data) => {
       // 서버로부터 받은 데이터(data)를 처리
       console.log(data);
+      alert("Sign Up Success!");
+      this.goToLoginPage();// 성공 메시지 출력 및 로그인페이지 이동
       // 여기에서 다른 작업을 수행할 수 있습니다.
     })
     .catch((error) => {

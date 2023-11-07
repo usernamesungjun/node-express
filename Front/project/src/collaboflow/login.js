@@ -42,6 +42,11 @@ class Login extends React.Component{
               // 오류 처리
             }
           })
+          .then((data) => {
+            alert("Log in Success!"); // Display an alert here
+            window.location.href = '/work'; // 로그인 성공 시 work 페이지로 이동
+            // Handle the data or perform other tasks
+          })
           .catch((error) => {
             // 오류 처리
             console.error('There was a problem with the fetch operation:', error);
