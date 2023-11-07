@@ -3,7 +3,7 @@ const userModel = require('../models/userModel');
 const secretKey = require('../jwt/secretkey').secretKey;
 
 exports.authMiddleware = async (req, res, next) => {
-  const authHeader = req.headers['authorization'];
+  const authHeader = req.headers['Authorization'];
   const accessToken = authHeader && authHeader.split(' ')[1];
 
   if (!accessToken) return res.sendStatus(401); // No token provided

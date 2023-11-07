@@ -94,12 +94,12 @@ handleEmailChange = (index, value) => {
     // POST 요청을 보내는 옵션 설정
     const requestOptions = {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json'},
       body: JSON.stringify(dataToSend), // 데이터를 JSON 문자열로 변환
     };
   
     // 서버 엔드포인트 URL 설정
-    const serverEndpoint = 'http://your-server-endpoint-url'; // 실제 서버 URL로 변경
+    const serverEndpoint = 'https://localhost:3000/creatProjects'; // 실제 서버 URL로 변경
   
     fetch(serverEndpoint, requestOptions)
       .then((response) => {

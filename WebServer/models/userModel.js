@@ -15,6 +15,11 @@ exports.findByLoginId = async (loginId) => {
   return user[0];
 };
 
+exports.findByEmail = async (email) => {
+  const user = await db.query('SELECT name, loginId, userId FROM user WHERE email = ?', [email]);
+  return user[0];
+};
+
 exports.comparePassword = async (inputPassword, hashedPassword) => {
   return bcrypt.compare(inputPassword, hashedPassword);
 };

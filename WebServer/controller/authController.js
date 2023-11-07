@@ -37,17 +37,12 @@ exports.login = async (req, res) => {
     if (isMatch) {
         // 토큰 생성
         const tokens = await jwtHelper.sign(user);
-
-        // refreshToken을 데이터베이스에 저장
-        await userModel.updateRefreshToken(user.loginId, tokens.refreshToken);
-
-        // accessToken과 refreshToken을 클라이언트에 전송
-        req.session.userId = user.userId; // 이렇게 하면 세션에 userId가 저장됩니다.
-        req.session.isLoggedIn = true; // 사용자의 로그인 상태를 저장합니다.
-        res.send({
-            message: 'Login successful',
-            accessToken: tokens.token,
-            refreshToken: tokens.refreshToken
+        
+        res.cookie('jwt',tokens)
+        res.status(200).send({
+            code: 200,
+            message: '토큰이 발급되었습니다.',
+            jwt: tokens.accessToken
         });
     } else {
         return res.status(400).send({ message: 'Invalid password' });
@@ -62,3 +57,23 @@ exports.logout = (req, res) => {
         res.send({ message: 'Logout successful' });
     });
 };
+
+
+exports.searchUsers = async (req, res) => {
+    try {
+      // 사용자 검색 로직
+      const { email } = req.query;
+      console.log(email)
+  
+      // UserModel.findByLoginId 함수를 호출하여 사용자를 찾습니다.
+      const user = await userModel.findByEmail(email);
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.json({ userId: user.userId ,name: user.name, loginId:user.loginId });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  };
