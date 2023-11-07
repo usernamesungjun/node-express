@@ -85,39 +85,46 @@ handleEmailChange = (index, value) => {
   
   handleSaveProjectData = () => {
     const { newProjectData } = this.state;
+  
+    // 로컬 스토리지에서 토큰을 가져옵니다.
+    const token = localStorage.getItem('jwt');
+  
     // 서버로 전송할 데이터 준비
     const dataToSend = {
       projectName: newProjectData.projectName,
-      teamMembers: newProjectData.teamMembers.filter(member => member.trim() !== ''), // 빈 문자열 필터링
+      teamMembers: newProjectData.teamMembers.filter(member => member.trim() !== ''),
     };
   
     // POST 요청을 보내는 옵션 설정
     const requestOptions = {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dataToSend), // 데이터를 JSON 문자열로 변환
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`, // 토큰을 헤더에 추가
+      },
+      body: JSON.stringify(dataToSend),
     };
   
     // 서버 엔드포인트 URL 설정
-    const serverEndpoint = 'http://your-server-endpoint-url'; // 실제 서버 URL로 변경
+    const serverEndpoint = 'http://your-server-endpoint-url';
   
     fetch(serverEndpoint, requestOptions)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        return response.json(); // 서버의 응답을 JSON으로 파싱
+        return response.json();
       })
       .then((data) => {
-        // 서버의 응답을 처리
         console.log('서버 응답:', data);
         // 필요한 처리를 추가하세요.
       })
       .catch((error) => {
         console.error('서버 요청 에러:', error);
       });
-    this.handleCloseNewProjectModal(); // 모달을 닫습니다.
+    this.handleCloseNewProjectModal();
   };
+  
   
   
   handleProjectDropdown = () => {
