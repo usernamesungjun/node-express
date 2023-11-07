@@ -90,10 +90,13 @@ handleEmailChange = (index, value) => {
     const token = JSON.parse(localStorage.getItem('jwt'));
     console.log(token)
   
+    //팀원 수 설정
+    const teamMembersCount = newProjectData.teamMembers.length + 1; // 1은 자신을 나타냅니다.
     // 서버로 전송할 데이터 준비
     const dataToSend = {
       projectName: newProjectData.projectName,
       teamMembers: newProjectData.teamMembers.filter(member => member.trim() !== ''),
+      teamMembersCount: teamMembersCount,
     };
   
     // POST 요청을 보내는 옵션 설정
