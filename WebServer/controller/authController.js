@@ -37,8 +37,8 @@ exports.login = async (req, res) => {
     if (isMatch) {
         // 토큰 생성
         const tokens = await jwtHelper.sign(user);
-        
-        res.cookie('jwt',tokens)
+        console.log(tokens.accessToken)
+
         res.status(200).send({
             code: 200,
             message: '토큰이 발급되었습니다.',

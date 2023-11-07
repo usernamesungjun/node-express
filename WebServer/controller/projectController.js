@@ -9,7 +9,9 @@ exports.createProject = async (req, res) => {
     if (!authHeader) return res.status(401).send({ message: 'No authorization header provided' });
 
     const accessToken = authHeader.split(' ')[1];
+    console.log(accessToken)
     const decoded = jwt.verify(accessToken); // 비밀키와 함께 토큰을 검증합니다.
+    console.log(decoded)
     const ownerId = decoded.loginId; // ownerId는 디코딩된 토큰에서 userId를 가져옵니다.
 
     // 프로젝트 생성 로직

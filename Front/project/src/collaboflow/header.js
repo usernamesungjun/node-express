@@ -87,7 +87,8 @@ handleEmailChange = (index, value) => {
     const { newProjectData } = this.state;
   
     // 로컬 스토리지에서 토큰을 가져옵니다.
-    const token = localStorage.getItem('jwt');
+    const token = JSON.parse(localStorage.getItem('jwt'));
+    console.log(token)
   
     // 서버로 전송할 데이터 준비
     const dataToSend = {
