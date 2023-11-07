@@ -98,14 +98,6 @@ handleEmailChange = (index, value) => {
     // POST 요청을 보내는 옵션 설정
     const requestOptions = {
       method: 'POST',
-<<<<<<< HEAD
-      headers: { 'Content-Type': 'application/json'},
-      body: JSON.stringify(dataToSend), // 데이터를 JSON 문자열로 변환
-    };
-  
-    // 서버 엔드포인트 URL 설정
-    const serverEndpoint = 'https://localhost:3000/creatProjects'; // 실제 서버 URL로 변경
-=======
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`, // 토큰을 헤더에 추가
@@ -114,8 +106,7 @@ handleEmailChange = (index, value) => {
     };
   
     // 서버 엔드포인트 URL 설정
-    const serverEndpoint = 'http://your-server-endpoint-url';
->>>>>>> 4429fd62dd52611247772f0271f5990b96b8ee66
+    const serverEndpoint = 'http://localhost:3000/creatProjects';
   
     fetch(serverEndpoint, requestOptions)
       .then((response) => {

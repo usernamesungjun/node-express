@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link , Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.css';
+import { json } from 'express';
 
 class Login extends React.Component{
   constructor(props) {
@@ -43,7 +44,7 @@ class Login extends React.Component{
             }
           })
           .then((data) => {
-            localStorage.setItem('jwt', data.token); //토큰 가져오기
+            localStorage.setItem('jwt', data.jwt); //토큰 가져오기
             alert("Log in Success!"); // Display an alert here
             window.location.href = '/work'; // 로그인 성공 시 work 페이지로 이동
             // Handle the data or perform other tasks
