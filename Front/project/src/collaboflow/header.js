@@ -15,7 +15,7 @@ class Header extends React.Component {
       showProjectDropdown: false,
       loggedIn: true,
       userProjects: [],
-      selectedProject: '',
+      selectedProject: this.state.userProjects.length > 0 ? this.state.userProjects[0] : '',
       userId: localStorage.getItem('userId') || '',//로그인된 유저ID 가져오기
       showNewProjectModal: false,//test
       newProjectData: {
@@ -159,7 +159,7 @@ handleEmailChange = (index, value) => {
         .then((data) => {
           // 가져온 데이터로 userProjects 상태를 업데이트
           this.setState({
-            userProjects: data.projectName, // 실제 서버 응답 데이터 필드로 'data.projects'를 대체하세요
+            userProjects: data.projectName,
           });
           console.log(data.projectName)
         })
