@@ -211,7 +211,7 @@ handleEmailChange = (index, value) => {
         </div>
         <div className={projectDropdownClass}>
           <ul>
-            {userProjects.map((projectName, index) => (
+            {userProjects && userProjects.map((projectName, index) => (
               <li key={index} onClick={this.moveToAnotherProject}>{projectName}</li>
             ))}
             <button
