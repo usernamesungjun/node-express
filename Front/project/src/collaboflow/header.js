@@ -15,7 +15,7 @@ class Header extends React.Component {
       showProjectDropdown: false,
       loggedIn: true,
       userProjects: [],
-      selectedProject: this.state.userProjects[0] || '',
+      selectedProject: this.state.userProjects.length > 0 ? this.state.userProjects[0] : '',
       userId: localStorage.getItem('userId') || '',//로그인된 유저ID 가져오기
       showNewProjectModal: false,//test
       newProjectData: {
@@ -146,9 +146,8 @@ handleEmailChange = (index, value) => {
     
     // 서버에서 프로젝트 데이터를 가져오는 요청
     const userId = this.state.userId; // userId 가져오기
-    console.log(userId)
 
-      fetch(`https://localhost:3000/getProjects?userId=${userId}`)
+      fetch(`프로젝트 데이터를 가져올 서버 엔드포인트 URL?userId=${userId}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error('네트워크 응답이 올바르지 않습니다');
@@ -158,7 +157,7 @@ handleEmailChange = (index, value) => {
         .then((data) => {
           // 가져온 데이터로 userProjects 상태를 업데이트
           this.setState({
-            userProjects: data.projectName, // 실제 서버 응답 데이터 필드로 'data.projects'를 대체하세요
+            userProjects: data.projectName,
           });
         })
         .catch((error) => {
