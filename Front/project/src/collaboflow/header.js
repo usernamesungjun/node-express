@@ -96,7 +96,7 @@ handleEmailChange = (index, value) => {
     const dataToSend = {
       projectName: newProjectData.projectName,
       teamMembers: newProjectData.teamMembers.filter(member => member.trim() !== ''),
-      teamMembersCount: teamMembersCount,
+      personnel: teamMembersCount,
     };
   
     // POST 요청을 보내는 옵션 설정
