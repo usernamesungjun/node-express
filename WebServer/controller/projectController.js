@@ -54,7 +54,7 @@ exports.getUserProjects = async (req, res) => {
     console.log(3, projects);
 
     // This will send an array of objects with just the projectName to the client.
-    res.json(projects);
+    res.status(200).send(projects);
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: 'Server error while retrieving projects' });

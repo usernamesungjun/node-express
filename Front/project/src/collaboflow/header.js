@@ -15,7 +15,7 @@ class Header extends React.Component {
       showProjectDropdown: false,
       loggedIn: true,
       userProjects: [],
-      selectedProject: '',
+      selectedProject: '창의융합종합설계1',
       userId: localStorage.getItem('userId') || '',//로그인된 유저ID 가져오기
       showNewProjectModal: false,//test
       newProjectData: {
@@ -150,24 +150,25 @@ handleEmailChange = (index, value) => {
     const url = `http://localhost:3000/getProjects?userId=${encodeURIComponent(userId)}`
 
       fetch(url)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error('네트워크 응답이 올바르지 않습니다');
-          }
-          return response.json();
-        })
-        .then((data) => {
-          // 가져온 데이터로 userProjects 상태를 업데이트
-          this.setState({
-            userProjects: data.projectName,
-            loading: false,
-          });
-          console.log(data.projectName)
-        })
-        .catch((error) => {
-          console.error('에러:', error);
-          this.setState({ loading: false });
-    });
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('네트워크 응답이 올바르지 않습니다');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('클라이언트에서 받은 데이터:', data[0]); // 이 줄을 추가
+        // 가져온 데이터로 userProjects 상태를 업데이트
+        this.setState({
+          userProjects: data,
+          loading: false,
+        });
+        console.log('userProjects 데이터:', this.state.userProjects);
+      })
+      .catch((error) => {
+        console.error('에러:', error);
+        this.setState({ loading: false });
+      });
   }
 
   // 프로젝트를 선택할 때 실행되는 핸들러
@@ -211,8 +212,8 @@ handleEmailChange = (index, value) => {
         </div>
         <div className={projectDropdownClass}>
           <ul>
-            {userProjects && userProjects.map((projectName, index) => (
-              <li key={index} onClick={this.moveToAnotherProject}>{projectName}</li>
+          {userProjects.map((project, index) => (
+            <li key={index} onClick={() => this.moveToAnotherProject(project.projectName)}>{project.projectName}</li>
             ))}
             <button
             type="button"
