@@ -136,17 +136,6 @@ class Register extends React.Component {
                           <div className="invalid-feedback">Please enter your password!</div>
                         </div>
                         <div className="col-12">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              name="terms"
-                              type="checkbox"
-                              value=""
-                              id="acceptTerms"
-                              required
-                            />
-                            <div className="invalid-feedback">You must agree before submitting.</div>
-                          </div>
                         </div>
                         <div className="col-12">
                           <button className="btn btn-primary w-100" type="submit" onClick={this.handleSubmit}>
