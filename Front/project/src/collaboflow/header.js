@@ -199,14 +199,14 @@ handleEmailChange = (index, value) => {
         {this.state.showNewProjectModal && (
           <div className="new-project-modal">
             <div className="new-project-content">
-              <p>프로젝트 이름</p>
+              <p>프로젝트 이름 (필수)</p>
               <input
                 type="text"
                 name="projectName"
                 value={this.state.newProjectData.projectName}
                 onChange={this.handleNewProjectDataChange}
               />
-              <p>초대할 팀원의 e-Mail</p>
+              <p>초대할 팀원의 e-Mail (선택)</p>
                 {this.state.newProjectData.teamMembers.map((email, index) => (
                   <div key={index}>
                     <input
@@ -226,7 +226,7 @@ handleEmailChange = (index, value) => {
 
               <div className="modal-btns">
                 <button type="button" class="btn btn-danger" onClick={this.handleCloseNewProjectModal}>닫기</button>
-                <button type="button" class="btn btn-info" onClick={this.handleSaveProjectData}>저장</button>
+                <button type="button" class="btn btn-info" onClick={this.handleSaveProjectData}>생성</button>
               </div>
             </div>
           </div>
