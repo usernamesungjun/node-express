@@ -1,7 +1,7 @@
 const db = require('../db.js')
 const bcrypt = require('bcrypt');
 
-exports.isUserExist = async (loginId, email) => {
+exports.isLoginIdExist = async (loginId, email) => {
   const result = await db.query('SELECT * FROM user WHERE loginId = ? OR email = ?', [loginId, email]);
   return result.length>0;
 };
@@ -33,3 +33,8 @@ exports.findRefreshToken = async (loginId) => {
   const result = await db.query('SELECT refreshToken FROM user WHERE loginId = ?', [loginId]);
   return result.length > 0 ? result[0].refreshToken : null;
 };
+
+exports.isUserExist = async (userId) => {
+  const result = await db.query('SELECT * FROM user WHERE userId = ?', [userId]);
+  return result.length>0;
+}

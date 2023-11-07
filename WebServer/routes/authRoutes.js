@@ -11,5 +11,6 @@ router.post('/logout', authController.logout);
 router.get('/searchUsers', authController.searchUsers);
 
 router.post('/creatProjects', projectController.createProject);
+router.get('/getProjects', projectController.getUserProjects)
 
 module.exports = router;

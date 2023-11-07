@@ -23,7 +23,7 @@ describe('Project Creation with Token Verification', () => {
   // 유효한 토큰으로 프로젝트 생성 요청
   it('should create a project with a valid token', done => {
     const projectDetails = {
-      projectName: 'New Project',
+      projectName: 'test2',
       startDate: '2023-01-01',
       endDate: '2023-12-31',
       personnel:1

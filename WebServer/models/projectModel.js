@@ -13,16 +13,24 @@ exports.createProject = async (projectName, startDate, endDate, ownerId, personn
 
 exports.getProjectById = async (projectId) => {
   const sql = 'SELECT * FROM project WHERE projectId = ?';
-  const result = await db.query(sql, [projectId]);
-  return result[0];
+  try {
+    const result = await db.query(sql, [projectId]);
+    console.log(result); // Log the raw result to see what you're getting back
+    return result[0];
+  } catch (error) {
+    console.error('Error in getProjectById:', error);
+    throw error; // Re-throw the error so it can be handled by the caller
+  }
 };
 
-// exports.updateProject = async (projectId, { name, startDate, endDate }) => {
-//   const sql = 'UPDATE projects SET name = ?, start_date = ?, end_date = ? WHERE id = ?';
-//   await db.query(sql, [name, startDate, endDate, projectId]);
-// };
-
-// exports.deleteProject = async (projectId) => {
-//   const sql = 'DELETE FROM projects WHERE id = ?';
-//   await db.query(sql, [projectId]);
-// };
+exports.findProjectNameById = async (projectId) => {
+  const sql = 'SELECT projectName From project WHERE projectId = ?';
+  try {
+    const result = await db.query(sql, [projectId]);
+    console.log(result); // Log the raw result to see what you're getting back
+    return result[0];
+  } catch (error) {
+    console.error('Error in findProjectNameById:', error);
+    throw error; // Re-throw the error so it can be handled by the caller
+  }
+};

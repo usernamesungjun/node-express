@@ -29,3 +29,26 @@ exports.createProject = async (req, res) => {
     res.status(400).send({ message: error.message });
   }
 };
+
+exports.getUserProjects = async (req, res) => {
+  try {
+    const {userId} = req.query
+    console.log(1,req.query)
+
+    const isUserId = await UserModel.isUserExist(userId)
+    if(!isUserId) return res.status(404).send({ message: '존재하지 않는 userId입니다. ' });
+
+    const projectIds = await JoinProjectModel.findProjectsByUserId(userId);
+    console.log(2,projectIds)
+    
+    const projects = await Promise.all(
+      projectIds.map(projectIds => ProjectModel.findProjectNameById(projectIds))
+    );
+    console.log(3,projects)
+
+    res.json(projects.map(projectName => ({ projectName })));
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Server error while retrieving projects' });
+  }
+}

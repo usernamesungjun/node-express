@@ -44,6 +44,7 @@ class Login extends React.Component{
           })
           .then((data) => {
             localStorage.setItem('jwt', JSON.stringify(data.jwt)); //토큰 가져오기
+            localStorage.setItem('userId', JSON.stringify(data.userId));
             alert("Log in Success!"); // Display an alert here
             window.location.href = '/work'; // 로그인 성공 시 work 페이지로 이동
             // Handle the data or perform other tasks

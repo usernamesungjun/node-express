@@ -7,7 +7,7 @@ exports.signUp = async (req, res) => {
     const { name, loginId, email, pw } = req.body;
     console.log(req.body);
     
-    if (await userModel.isUserExist(loginId, email)) {
+    if (await userModel.isLoginIdExist(loginId, email)) {
         return res.status(400).send({ message: 'Login ID or Email already exists.' });
     }
 
@@ -42,7 +42,8 @@ exports.login = async (req, res) => {
         res.status(200).send({
             code: 200,
             message: '토큰이 발급되었습니다.',
-            jwt: tokens.accessToken
+            jwt: tokens.accessToken,
+            userId : user.userId
         });
     } else {
         return res.status(400).send({ message: 'Invalid password' });
