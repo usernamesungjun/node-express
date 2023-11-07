@@ -158,10 +158,12 @@ handleEmailChange = (index, value) => {
           // 가져온 데이터로 userProjects 상태를 업데이트
           this.setState({
             userProjects: data.projectName,
+            loading: false,
           });
         })
         .catch((error) => {
           console.error('에러:', error);
+          this.setState({ loading: false });
     });
   }
 
@@ -181,10 +183,13 @@ handleEmailChange = (index, value) => {
   };
 
   render() {
-    const { selectedProject, userProjects } = this.state;
+    const { selectedProject, userProjects , loading } = this.state;
 
     const projectDropdownClass = this.state.showProjectDropdown ? "project-dropdown show" : "project-dropdown";
 
+    if (loading) {
+      return <div>Loading...</div>; // 로딩 중일 때 로딩 메시지 표시
+    }
     return (
       <header id="header" className="header">
         <div className="d-flex justify-content-between align-items-center">
