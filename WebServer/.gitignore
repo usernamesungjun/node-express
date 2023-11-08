@@ -1,0 +1,7 @@
+# Created by https://www.toptal.com/developers/gitignore/api/database
+# Edit at https://www.toptal.com/developers/gitignore?templates=database
+
+# 파일 제외
+db.js
+
+# End of https://www.toptal.com/developers/gitignore/api/database
