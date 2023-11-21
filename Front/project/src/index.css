@@ -424,6 +424,12 @@ h6 {
   display: flex;
   justify-content: space-between; /* 버튼 간의 간격을 넓히기 위해 공간을 균일하게 분배합니다 */
 }
+.rounded-input {
+  border-radius: 8px; /* 둥근 테두리를 설정할 수 있는 속성 */
+  padding: 8px; /* 내용과 테두리 사이의 간격을 조절할 수 있는 속성 */
+  margin: 4px; /* 요소 간의 간격을 조절할 수 있는 속성 */
+  border: 1px solid #ccc; /* 테두리 스타일 및 색상을 설정할 수 있는 속성 */
+}
 .logo {
   line-height: 1;
 }

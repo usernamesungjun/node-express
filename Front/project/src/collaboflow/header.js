@@ -1,6 +1,7 @@
 import React, { useState , Component } from 'react';
 import Logoimg from "./CollaboFlow-remove.png";
 import 'bootstrap/dist/css/bootstrap.css';
+import { ArrowDownCircleFill } from 'react-bootstrap-icons';
 class Header extends React.Component {
   
   
@@ -204,11 +205,11 @@ handleEmailChange = (index, value) => {
           <div className='search-bar'>
             <span className="selected-project" onClick={this.handleProjectDropdown} >{selectedProject}</span>
           </div>
-          <button
+          <ArrowDownCircleFill
             className="project-plus-btn"
-            class="project-plus-btn btn btn-light btn-sm"
+            size={25}
             onClick={this.handleProjectDropdown}
-          >+</button>
+          >+</ArrowDownCircleFill>
         </div>
         <div className={projectDropdownClass}>
           <ul>

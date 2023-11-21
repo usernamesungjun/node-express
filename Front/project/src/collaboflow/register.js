@@ -66,7 +66,7 @@ class Register extends React.Component {
                   <div className="d-flex justify-content-center py-4">
                     <a href="index.html" className="logo d-flex align-items-center w-auto">
                       <img src="assets/img/logo.png" alt="" />
-                      <span className="d-none d-lg-block">CollboFlow</span>
+                      <span className="d-none d-lg-block">CollaboFlow</span>
                     </a>
                   </div>
                   <div className="card mb-3">
