@@ -1,5 +1,6 @@
 const db = require('../db.js');
 
+//프로젝트 생성
 exports.createProject = async (projectName, startDate, endDate, ownerId, personnel) => {
   try {
     const result = await db.query(
@@ -11,11 +12,11 @@ exports.createProject = async (projectName, startDate, endDate, ownerId, personn
   }
 };
 
+//프로젝트 아이디로 프로젝트정보 가져오기
 exports.getProjectById = async (projectId) => {
   const sql = 'SELECT * FROM project WHERE projectId = ?';
   try {
     const result = await db.query(sql, [projectId]);
-    console.log(result); // Log the raw result to see what you're getting back
     return result[0];
   } catch (error) {
     console.error('Error in getProjectById:', error);
@@ -23,14 +24,70 @@ exports.getProjectById = async (projectId) => {
   }
 };
 
+//프로젝트 아이디로 프로젝트 이름 가져오기
 exports.findProjectNameById = async (projectId) => {
-  const sql = 'SELECT projectName From project WHERE projectId = ?';
+  const sql = 'SELECT * From project WHERE projectId = ?';
   try {
     const result = await db.query(sql, [projectId]);
-    console.log(result); // Log the raw result to see what you're getting back
     return result[0];
   } catch (error) {
     console.error('Error in findProjectNameById:', error);
     throw error; // Re-throw the error so it can be handled by the caller
   }
 };
+
+//프로젝트 아이디로 ownerId 조회
+exports.findOwnerIdById = async (projectId) => {
+  const sql = 'SELECT ownerId FROM project WHERE projectId = ?';
+  try {
+    const result = await db.query(sql, [projectId]);
+    return result[0];
+  } catch (error) {
+    console.error('Error in getProjectOwnerId:', error);
+    throw error; // Re-throw the error so it can be handled by the caller
+  }
+};
+
+exports.isProjectExist = async (projectId) => {
+  const result = await db.query('SELECT * FROM project WHERE projectId = ?', [projectId]);
+  return result.length>0;
+}
+
+exports.updateProject = async (projectId, newData) => {
+  const updates = [];
+  const values = [];
+
+  // Constructing the dynamic query
+  Object.keys(newData).forEach(key => {
+    if (newData[key] != null) {
+      updates.push(`${key} = ?`);
+      values.push(newData[key]);
+    }
+  });
+
+  if (updates.length === 0) {
+    throw new Error('No updates provided');
+  }
+
+  const query = `UPDATE project SET ${updates.join(', ')} WHERE projectId = ?`;
+  values.push(projectId);
+
+  try {
+    const result = await db.query(query, values);
+    return result.affectedRows;
+  } catch (error) {
+    console.error('Error in updateProject:', error);
+    throw error;
+  }
+};
+
+exports.deleteProject = async (projectId) => {
+  const query = 'DELETE FROM project WHERE projectId = ?';
+  try {
+    const result = await db.query(query, [projectId]);
+    return result.affectedRows;
+  } catch (error) {
+    console.error('Error in deleteProject:', error);
+    throw error;
+  }
+}
