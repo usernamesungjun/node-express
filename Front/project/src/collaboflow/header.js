@@ -16,7 +16,9 @@ class Header extends React.Component {
       showProjectDropdown: false,
       loggedIn: true,
       userProjects: [],
-      selectedProject: '창의융합종합설계1',
+      projectId:[],
+      selectedProject: '',
+      selectedProjectId:'',
       userId: localStorage.getItem('userId') || '',//로그인된 유저ID 가져오기
       showNewProjectModal: false,//test
       newProjectData: {
@@ -139,13 +141,7 @@ handleEmailChange = (index, value) => {
     }));
   };
 
-  componentDidMount() { // test
-    // this.setState({
-    //   selectedProject: '창의융합종합설계', // 선택된 프로젝트 이름
-    //   userProjects: ['디자인패턴', '컴퓨터비전', '다른 프로젝트 이름들'], // 사용자의 프로젝트 목록
-    // });
-    
-    // 서버에서 프로젝트 데이터를 가져오는 요청
+  componentDidMount() {
     const userId = this.state.userId; // userId 가져오기
 
     const url = `http://localhost:3000/projects?userId=${encodeURIComponent(userId)}`
@@ -158,13 +154,20 @@ handleEmailChange = (index, value) => {
         return response.json();
       })
       .then((data) => {
-        console.log('클라이언트에서 받은 데이터:', data[0]); // 이 줄을 추가
+        const projectId = data.map((project) => project.projectId);
+        console.log('클라이언트에서 받은 데이터:', data); // 이 줄을 추가
         // 가져온 데이터로 userProjects 상태를 업데이트
         this.setState({
           userProjects: data,
+          selectedProject: data.length > 0 ? data[0].projectName : '',
+          projectId: projectId,
+          selectedProjectId: projectId.length > 0 ? projectId[0] : '',
           loading: false,
         });
+        localStorage.setItem('selectedProjectId', JSON.stringify(this.state.selectedProjectId)); // selectedProjectId 저장
         console.log('userProjects 데이터:', this.state.userProjects);
+        console.log('projectIds:', this.state.projectId);
+        console.log('selected:',this.state.selectedProjectId);
       })
       .catch((error) => {
         console.error('에러:', error);
@@ -173,17 +176,15 @@ handleEmailChange = (index, value) => {
   }
 
   // 프로젝트를 선택할 때 실행되는 핸들러
-  handleProjectSelect = (projectName) => {
+  handleProjectSelect = (project) => {
+    // Update state
     this.setState({
-      selectedProject: projectName,
-      showProjectDropdown: false, // 프로젝트 선택 후 드롭다운 숨김
-    });
-  };
-
-  //선택한 프로젝트로 이동
-  moveToAnotherProject = (projectName)=>{
-    this.setState({
-      //추가필요
+      selectedProject: project.projectName,
+      selectedProjectId: project.projectId,
+      showProjectDropdown: false,
+    }, () => {
+      // 선택한 프로젝트로 seletedProjectId 변경
+      localStorage.setItem('selectedProjectId', JSON.stringify(this.state.selectedProjectId));
     });
   };
 
@@ -214,7 +215,7 @@ handleEmailChange = (index, value) => {
         <div className={projectDropdownClass}>
           <ul>
           {userProjects.map((project, index) => (
-            <li key={index} onClick={() => this.moveToAnotherProject(project.projectName)}>{project.projectName}</li>
+            <li key={index} onClick={() => this.handleProjectSelect(project)}>{project.projectName}</li>
             ))}
             <button
             type="button"

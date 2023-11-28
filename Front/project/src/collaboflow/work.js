@@ -5,27 +5,96 @@ class Work extends React.Component {
     super(props);
 
     this.state = {
+      selectedProjectId: localStorage.getItem('selectedProjectId'),
       tasks: [],
       newTask: {
         title: '',
         content: '',
+        taskState:'',
       },
       isModalOpen: false, // Add the state for modal visibility
+      recentMentions: [
+        {
+          userName: '김상진',
+          mentionDate: '2023-11-02',
+          workName: '요구명세서 작성',
+          mentionContent: '요구명세서 수정을 수정했습니다.',
+        },
+        {
+          userName: '이치영',
+          mentionDate: '2023-11-01',
+          workName: '요구명세서 작성',
+          mentionContent: '요구명세서 수정했습니다.',
+        },
+      ],
     };
   }
+  componentDidMount() {
+    this.fetchData();
+  }
+  
+  fetchData = async () => {
+    await this.fetchRecentMentions();
+    await this.fetchWorks();
+  }
+  
+  fetchWorks = async () => {
+    try {
+      const selectedProjectId = this.state.selectedProjectId;
+      const response = await fetch(`http://localhost:3000/project/works?projectId=${encodeURIComponent(selectedProjectId)}`);
+      const data = await response.json();
+      
+      this.setState((prevState) => ({
+        tasks:data,
+      }));
 
-  handleAddTask = () => {
-    const { tasks, newTask } = this.state;
-    const updatedTasks = [...tasks, { ...newTask, id: tasks.length + 1 }];
+      console.log('workdata:', data);
+      console.log('select project:', selectedProjectId);
+    } catch (error) {
+      console.error('Error fetching works:', error);
+    }
+  }
 
-    this.setState({
-      tasks: updatedTasks,
-      newTask: {
-        title: '',
-        content: '',
-      },
-      isModalOpen: false, // Close the modal after adding a task
-    });
+  fetchRecentMentions = async () => {
+    try {
+      const response = await fetch('');
+      const data = await response.json();
+
+      this.setState({ recentMentions: data });
+    } catch (error) {
+      console.error('Error fetching recent mentions:', error);
+    }
+  };
+
+  handleAddTask = async () => {
+    try {
+      const { newTask, selectedProjectId } = this.state;
+  
+      const response = await fetch('http://localhost:3000/project/works', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...newTask, projectId: selectedProjectId }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to add task');
+      }
+      const data = await response.json();
+      
+      this.setState((prevState) => ({
+        tasks: [...prevState.tasks, data],
+        newTask: {
+          title: '',
+          content: '',
+          taskState: '',
+        },
+        isModalOpen: false,
+      }));
+    } catch (error) {
+      console.error('Error adding task:', error);
+    }
   };
 
   handleInputChange = (e) => {
@@ -48,6 +117,7 @@ class Work extends React.Component {
 
   render() {
     const { tasks, newTask, isModalOpen } = this.state;
+    const { selectedProject } = this.props;
 
     return (
       <main id="main" className="main">
@@ -72,34 +142,46 @@ class Work extends React.Component {
               <div className="card">
                 <div className="card-body">
                   <div className="accordion" id="accordionExample">
-                    {tasks.map((task) => (
-                      <div className="accordion-item" key={task.id}>
-                        <h2 className="accordion-header" id={`heading${task.id}`}>
-                          <button
-                            className="accordion-button"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target={`#collapse${task.id}`}
-                            aria-expanded={task.id === 1}
-                            aria-controls={`collapse${task.id}`}
-                          >
-                            {task.title}
-                          </button>
-                        </h2>
-                        <div
-                          id={`collapse${task.id}`}
-                          className={`accordion-collapse collapse ${
-                            task.id === 1 ? 'show' : ''
-                          }`}
-                          aria-labelledby={`heading${task.id}`}
-                          data-bs-parent="#accordionExample"
+                  {tasks.map((task) => (
+                     console.log(task.mentions),
+                    <div className="accordion-item" key={task.workId}>
+                      <h2 className="accordion-header" id={`heading${task.workId}`}>
+                        <button
+                          className="accordion-button"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target={`#collapse${task.workId}`}
+                          aria-expanded={task.workId === 1}
+                          aria-controls={`collapse${task.workId}`}
                         >
-                          <div className="accordion-body">
-                            <strong>{task.title}</strong> {task.content}
-                          </div>
-                        </div>
+                          {task.workTitle}
+                        </button>
+                      </h2>
+                      <div
+                        id={`collapse${task.workId}`}
+                        className={`accordion-collapse collapse ${task.workId === 1 ? 'show' : ''}`}
+                        aria-labelledby={`heading${task.workId}`}
+                        data-bs-parent="#accordionExample"
+                      >
+                        <div className="accordion-body">
+                          {task.mentions && task.mentions.length > 0 ? (
+                            <div>
+                              {task.mentions.map((mention, index) => (
+                                <div key={index}>
+                                  <h5 className="mentionUserName">{mention.userId}</h5>
+                                  <span className="mentionDate">{mention.registerDate}</span>
+                                  <br />
+                                  <span className="mentionContent">{mention.contents}</span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div>멘션이 없습니다.</div>
+                          )}
                       </div>
-                    ))}
+                    </div>
+                  </div>
+                ))}
                   </div>
                 </div>
               </div>
@@ -174,6 +256,24 @@ class Work extends React.Component {
             </div>
           </div>
         </section>
+        {/* 새로운 UI 엘리먼트 (오른쪽에 배치) */}
+          <div className="recentmention">
+            <h5>최근 멘션</h5>
+            {this.state.recentMentions.map((mention, index) => (
+              <div key={index} className="card">
+                <div className="card-body">
+                  <label className="labelContainer">
+                    <h5 className="mentionUserName">{mention.userName}</h5>
+                    <span className="workName">{mention.workName}{' '}</span>
+                    <span className="mentionDate">{mention.mentionDate}</span>
+                    <br />
+                    <span className="mentionContent">{mention.mentionContent}</span>
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* 새로운 UI 엘리먼트 (오른쪽에 배치) */}
       </main>
     );
   }
