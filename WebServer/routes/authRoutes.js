@@ -3,6 +3,7 @@ const userController = require('../controller/userController.js');
 const projectController = require('../controller/projectController');
 const workController = require('../controller/workController.js')
 const mentionController = require('../controller/mentionController.js')
+const documentController = require('../controller/documentController.js')
 const authMiddleware = require('../MiddleWare/authMiddleWare.js')
 
 const router = express.Router();
@@ -36,6 +37,10 @@ router.delete('/project/work/:workId',workController.deleteWork)//삭제
 router.post('/project/work/mention',mentionController.createMention)//생성
 router.put('/project/work/:workId/mention/:mentionId', mentionController.updateMention)//수정
 router.delete('/project/work/mention/:mentionId',mentionController.deleteMention)//삭제
+router.get('/project/work/metion', mentionController.getMention)
 
+//문서
+router.post('/project/create-document', documentController.createDocument)//생성
+router.get('/project/write-document', documentController.writeDocument)
 
 module.exports = router;

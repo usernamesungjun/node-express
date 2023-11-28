@@ -44,3 +44,8 @@ exports.isUserExist = async (userId) => {
   const result = await db.query('SELECT * FROM user WHERE userId = ?', [userId]);
   return result.length>0;
 }
+
+exports.findNameByUserId = async (userId) => {
+  const userName = await db.query('SELECT name FROM user WHERE userId = ?', [userId]);
+  return userName[0];
+};

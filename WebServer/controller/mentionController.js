@@ -1,6 +1,7 @@
 const moment = require('moment-timezone')
 const mentionModel = require('../models/mentionModel.js')
 const projectModel = require('../models/projectModel.js')
+const workModel = require('../models/workModel.js')
 const userModel = require('../models/userModel.js')
 
 exports.createMention = async (req, res) => {
@@ -12,6 +13,25 @@ exports.createMention = async (req, res) => {
     const newMentionId = await mentionModel.createMention(workId, userId, contents, registerDate)
     
     res.status(201).json({mentionId:newMentionId,message: '멘션등록이 성공했습니다.'})
+  } catch (error) {
+    console.log(error)
+    res.status(400).json({ message: error.message })
+  }
+}
+
+exports.getMention = async (req,res) => {
+  try {
+    const { projectId } = req.query
+    console.log(req.query)
+
+    const isProjectExist = await projectModel.isProjectExist(projectId)
+    if (!isProjectExist) return res.status(404).json({ message: '존재하지 않는 project입니다.' });
+
+    const workIds = await workModel.findWorkIdByProjectId(projectId)
+    console.log(workIds[0])
+    const mentionDatas = await mentionModel.findMetionsDesByworkId(workIds[0])
+    console.log(mentionDatas)
+
   } catch (error) {
     console.log(error)
     res.status(400).json({ message: error.message })

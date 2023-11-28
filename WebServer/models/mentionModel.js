@@ -48,6 +48,17 @@ exports.findMentionsByWorkId = async (workId) => {
   return mention;
 }
 
+//최근 멘션 조회
+exports.findMetionsDesByworkId = async (workId) => {
+  try {
+    const mention = await db.query('SELECT userId,contents,registerDate FROM mention WHERE workId = ? ORDER BY registerDate DESC LIMIT 5;',[workId])
+    return mention;
+  } catch (error) {
+    console.error('Error in findMetionsDesByworkId:', error);
+    throw error;
+  }
+}
+
 //멘션 만 삭제
 exports.deleteMentionByMentionId = async (mentionId) => {
   const query = 'DELETE FROM mention WHERE mentionId = ?';

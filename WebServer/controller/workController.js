@@ -1,6 +1,7 @@
 const workModel = require('../models/workModel.js')
 const projectModel = require('../models/projectModel.js');
 const mentionModel = require('../models/mentionModel.js')
+const userModel = require('../models/userModel.js')
 
 exports.createWork = async (req, res) => {
   try {
@@ -23,11 +24,29 @@ exports.getProjectWork = async (req, res) => {
 
   const workData = await workModel.findByProjectId(projectId)
 
-  const workWithMentions = await Promise.all(workData.map(async (work) => {
+/*   const workWithMentions = await Promise.all(workData.map(async (work) => {
     const mentions = await mentionModel.findMentionsByWorkId(work.workId);
      return {
       ...work, 
-      mentions: mentions 
+      mentions: mentions
+    };
+  })); */
+
+  const workWithMentions = await Promise.all(workData.map(async (work) => {
+    const mentions = await mentionModel.findMentionsByWorkId(work.workId);
+    const mentionsWithUserNames = await Promise.all(mentions.map(async (mention) => {
+      const user = await userModel.findNameByUserId(mention.userId);
+      const userName = user.length > 0 ? user[0].name : 'Unknown'; // Assuming such a function exists
+      return {
+        mentionId: mention.mentionId,
+        name: userName,
+        content : mention.contents,
+        registerDate : mention.registerDate
+      }
+    }));
+    return {
+      ...work,
+      mentions: mentionsWithUserNames
     };
   }));
 

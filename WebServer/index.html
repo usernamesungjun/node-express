@@ -1,0 +1,42 @@
+<html>
+<body>
+  <h1> Simple editor</h1>
+  <div contenteditable="true" id="editor">Edit me.</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/yorkie-js-sdk/0.4.9/yorkie-js-sdk.js"
+    integrity="sha512-U/EVBJg0vZZAx8vk3Tty6X3bJNmQGFJ8vvjs1ggFW44MLhAQSH3G3/O+w6LwkvssSmXgXGTSj9Fv1iiLF4vBrA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    async function main() {
+      const client = new yorkie.Client('https://api.yorkie.dev', {
+        apiKey: 'cli6r13prhcevnm8qntg'
+      });
+      await client.activate();
+
+      const doc = new yorkie.Document('');
+      await client.attach(doc);
+
+      doc.update((root) => {
+        if(root.text){
+          editor.innerHTML = root.text;
+        } else{
+          root.text = 'Edit me.'
+        }
+      })
+
+      editor.addEventListener('input', (event) => {
+        doc.update((root) => {
+          root.text = editor.innerHTML
+        })
+      })
+
+      doc.subscribe((event) => {
+        if(event.type === 'remote-change'){
+          editor.innerHTML = doc.getRoot().text
+        }
+      })
+    }
+    main();
+  </script>
+</body>
+
+</html>

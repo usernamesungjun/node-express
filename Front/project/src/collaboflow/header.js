@@ -148,7 +148,7 @@ handleEmailChange = (index, value) => {
     // 서버에서 프로젝트 데이터를 가져오는 요청
     const userId = this.state.userId; // userId 가져오기
 
-    const url = `http://localhost:3000/getProjects?userId=${encodeURIComponent(userId)}`
+    const url = `http://localhost:3000/projects?userId=${encodeURIComponent(userId)}`
 
       fetch(url)
       .then((response) => {

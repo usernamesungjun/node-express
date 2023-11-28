@@ -26,7 +26,7 @@ exports.getProjectById = async (projectId) => {
 
 //프로젝트 아이디로 프로젝트 이름 가져오기
 exports.findProjectNameById = async (projectId) => {
-  const sql = 'SELECT * From project WHERE projectId = ?';
+  const sql = 'SELECT * FROM project WHERE projectId = ?';
   try {
     const result = await db.query(sql, [projectId]);
     return result[0];
