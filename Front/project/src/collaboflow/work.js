@@ -45,7 +45,7 @@ class Work extends React.Component {
       const data = await response.json();
       
       this.setState((prevState) => ({
-        tasks: [...prevState.tasks, ...data],
+        tasks:data,
       }));
 
       console.log('workdata:', data);
