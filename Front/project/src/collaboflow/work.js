@@ -143,6 +143,7 @@ class Work extends React.Component {
                 <div className="card-body">
                   <div className="accordion" id="accordionExample">
                   {tasks.map((task) => (
+                     console.log(task.mentions),
                     <div className="accordion-item" key={task.workId}>
                       <h2 className="accordion-header" id={`heading${task.workId}`}>
                         <button
@@ -163,15 +164,14 @@ class Work extends React.Component {
                         data-bs-parent="#accordionExample"
                       >
                         <div className="accordion-body">
-                          <strong>{task.workTitle}</strong> {task.workState}
                           {task.mentions && task.mentions.length > 0 ? (
                             <div>
-                              <h5>Mentions</h5>
                               {task.mentions.map((mention, index) => (
                                 <div key={index}>
-                                  <span>{mention.userName}</span>
-                                  <span>{mention.mentionDate}</span>
-                                  <span>{mention.mentionContent}</span>
+                                  <h5 className="mentionUserName">{mention.userId}</h5>
+                                  <span className="mentionDate">{mention.registerDate}</span>
+                                  <br />
+                                  <span className="mentionContent">{mention.contents}</span>
                                 </div>
                               ))}
                             </div>
