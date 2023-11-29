@@ -24,19 +24,12 @@ exports.getProjectWork = async (req, res) => {
 
   const workData = await workModel.findByProjectId(projectId)
 
-/*   const workWithMentions = await Promise.all(workData.map(async (work) => {
-    const mentions = await mentionModel.findMentionsByWorkId(work.workId);
-     return {
-      ...work, 
-      mentions: mentions
-    };
-  })); */
-
   const workWithMentions = await Promise.all(workData.map(async (work) => {
     const mentions = await mentionModel.findMentionsByWorkId(work.workId);
     const mentionsWithUserNames = await Promise.all(mentions.map(async (mention) => {
       const user = await userModel.findNameByUserId(mention.userId);
-      const userName = user.length > 0 ? user[0].name : 'Unknown'; // Assuming such a function exists
+      const userName = user.length > 0 ? user[0].name : 'Unknown';
+      console.log(userName)
       return {
         mentionId: mention.mentionId,
         name: userName,

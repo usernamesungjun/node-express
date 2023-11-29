@@ -28,9 +28,6 @@ exports.getMention = async (req,res) => {
     if (!isProjectExist) return res.status(404).json({ message: '존재하지 않는 project입니다.' });
 
     const workIds = await workModel.findWorkIdByProjectId(projectId)
-    console.log(workIds[0])
-    const mentionDatas = await mentionModel.findMetionsDesByworkId(workIds[0])
-    console.log(mentionDatas)
 
   } catch (error) {
     console.log(error)
