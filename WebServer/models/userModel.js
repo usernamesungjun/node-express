@@ -52,7 +52,7 @@ exports.findNameByUserId = async (userId) => {
 
 exports.findByUserId = async (userId) => {
   const user = await db.query('SELECT name, email FROM user WHERE userId = ?', [userId])
-  return user
+  return user[0]
 }
 
 exports.updatePw = async (pw,userId) => {

@@ -81,14 +81,8 @@ exports.myPage = async (req,res) => {
         const { userId } = req.query
 
         const user = await userModel.findByUserId(userId)
-        const userData = await Promise.all(user.map(async (user) => {
-            return {
-                name : user.name,
-                email : user.email
-            }
-        }))
         
-        res.status(200).json(userData)
+        res.status(200).json(user)
     } catch (error) {
         res.status(500).json(error.message);
     }
