@@ -5,7 +5,7 @@ const projectModel = require("../models/projectModel")
 const userModel = require('../models/userModel.js')
 
 exports.createDocument = async (req, res) => {
-  const { projectId, documentName } = req.body;
+  const { projectId, documentName, yorkieName } = req.body;
   console.log("문서 생성요청", req.body);
 
   try {
@@ -14,8 +14,8 @@ exports.createDocument = async (req, res) => {
       return res.status(400).json({ message: "projectId is not found" });
     }
 
-    const documentId = await documentModel.createDocument(projectId,documentName);
-
+    const documentId = await documentModel.createDocument(projectId,documentName,yorkieName);
+    
     res.status(201).json({success: true,documentId: documentId, message: "Document created successfully.",});
   } catch (error) {
     console.error("Error creating document:", error);

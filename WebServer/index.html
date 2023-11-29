@@ -12,7 +12,7 @@
       });
       await client.activate();
 
-      const doc = new yorkie.Document('');
+      const doc = new yorkie.Document('회의록');
       await client.attach(doc);
 
       doc.update((root) => {

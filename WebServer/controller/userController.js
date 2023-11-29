@@ -57,7 +57,6 @@ exports.logout = (req, res) => {
     });
 };
 
-
 exports.searchUsers = async (req, res) => {
     try {
       // 사용자 검색 로직
@@ -76,3 +75,36 @@ exports.searchUsers = async (req, res) => {
       res.status(500).json(error.message);
     }
 };
+
+exports.myPage = async (req,res) => {
+    try {
+        const { userId } = req.query
+
+        const user = await userModel.findByUserId(userId)
+        const userData = await Promise.all(user.map(async (user) => {
+            return {
+                name : user.name,
+                email : user.email
+            }
+        }))
+        
+        res.status(200).json(userData)
+    } catch (error) {
+        res.status(500).json(error.message);
+    }
+}
+
+exports.updateMypage = async (req,res) => {
+    try {
+        console.log('유저 개인정보 업데이트')
+        const { userId,pw } = req.body
+        console.log(req.body)
+
+        const hashedPassword = await bcrypt.hash(pw, 10);
+        await userModel.updatePw(hashedPassword,userId)
+
+        res.status(200).json({message: "Success chage "})
+    } catch (error) {
+        res.status(500).json(error.message);
+    }
+}

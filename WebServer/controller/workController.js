@@ -6,6 +6,7 @@ const userModel = require('../models/userModel.js')
 exports.createWork = async (req, res) => {
   try {
     const {projectId ,workTitle, workState} = req.body
+    console.log('작업생성요청', req.body)
 
     const newWorkId = await workModel.creatWork(projectId ,workTitle, workState);
 

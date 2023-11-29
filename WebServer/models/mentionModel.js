@@ -13,7 +13,7 @@ exports.createMention = async ( workId, userId, contents, registerDate) => {
   }
 }
 
-exports.updateMention = async (workId, mentionId, newData) => {
+exports.updateMention = async (mentionId, newData) => {
   const updates = [];
   const values = [];
 
@@ -29,8 +29,7 @@ exports.updateMention = async (workId, mentionId, newData) => {
     throw new Error('No updates provided');
   }
 
-  const query = `UPDATE mention SET ${updates.join(', ')} WHERE workId = ? AND mentionId = ?`;
-  values.push(workId);
+  const query = `UPDATE mention SET ${updates.join(', ')} WHERE mentionId = ?`;
   values.push(mentionId);
 
   try {
