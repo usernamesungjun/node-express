@@ -168,10 +168,10 @@ class Work extends React.Component {
                             <div>
                               {task.mentions.map((mention, index) => (
                                 <div key={index}>
-                                  <h5 className="mentionUserName">{mention.userId}</h5>
+                                  <h5 className="mentionUserName">{mention.name}</h5>
                                   <span className="mentionDate">{mention.registerDate}</span>
                                   <br />
-                                  <span className="mentionContent">{mention.contents}</span>
+                                  <span className="mentionContent">{mention.content}</span>
                                 </div>
                               ))}
                             </div>
