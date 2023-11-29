@@ -13,20 +13,7 @@ class Work extends React.Component {
         taskState:'',
       },
       isModalOpen: false, // Add the state for modal visibility
-      recentMentions: [
-        {
-          userName: '김상진',
-          mentionDate: '2023-11-02',
-          workName: '요구명세서 작성',
-          mentionContent: '요구명세서 수정을 수정했습니다.',
-        },
-        {
-          userName: '이치영',
-          mentionDate: '2023-11-01',
-          workName: '요구명세서 작성',
-          mentionContent: '요구명세서 수정했습니다.',
-        },
-      ],
+      recentMentions: [],
     };
   }
   componentDidMount() {
@@ -48,8 +35,6 @@ class Work extends React.Component {
         tasks:data,
       }));
 
-      console.log('workdata:', data);
-      console.log('select project:', selectedProjectId);
     } catch (error) {
       console.error('Error fetching works:', error);
     }
@@ -57,7 +42,8 @@ class Work extends React.Component {
 
   fetchRecentMentions = async () => {
     try {
-      const response = await fetch('');
+      const selectedProjectId = this.state.selectedProjectId;
+      const response = await fetch(`http://localhost:3000/project/work/metion?projectId=${encodeURIComponent(selectedProjectId)}`);
       const data = await response.json();
 
       this.setState({ recentMentions: data });
@@ -263,11 +249,11 @@ class Work extends React.Component {
               <div key={index} className="card">
                 <div className="card-body">
                   <label className="labelContainer">
-                    <h5 className="mentionUserName">{mention.userName}</h5>
-                    <span className="workName">{mention.workName}{' '}</span>
-                    <span className="mentionDate">{mention.mentionDate}</span>
+                    <h5 className="mentionUserName">{mention.name}</h5>
+                    <span className="workName">{mention.workTitle}{' '}</span>
+                    <span className="mentionDate">{mention.registerDate}</span>
                     <br />
-                    <span className="mentionContent">{mention.mentionContent}</span>
+                    <span className="mentionContent">{mention.content}</span>
                   </label>
                 </div>
               </div>

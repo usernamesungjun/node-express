@@ -7,6 +7,7 @@ import Slidebar from './collaboflow/slidebar';
 import Login from './collaboflow/login';
 import Register from './collaboflow/register';
 import Work from './collaboflow/work';
+import Mypage from './collaboflow/mypage'
 
 import './index.css'
 import 'popper.js';
@@ -28,6 +29,13 @@ root.render(
             <Header />
             <Slidebar />
             <Work />
+          </>
+        } />
+        <Route path="/mypage" element={
+          <>
+            <Header />
+            <Slidebar />
+            <Mypage />
           </>
         } />
       </Routes>
