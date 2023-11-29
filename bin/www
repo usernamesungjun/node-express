@@ -1,90 +1,105 @@
-#!/usr/bin/env node
+let express = require("express");
+let http = require("http");
+let app = express();
+let cors = require("cors");
+let server = http.createServer(app);
+let {Server} = require("socket.io");
+let io = new Server(server)
 
-/**
- * Module dependencies.
- */
+app.use(cors());
+const PORT = process.env.PORT || 3030;
 
-var app = require('../app');
-var debug = require('debug')('myapp:server');
-var http = require('http');
+let users = {};
 
-/**
- * Get port from environment and store in Express.
- */
+let socketToRoom = {};
 
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+const maximum = process.env.MAXIMUM || 4;
 
-/**
- * Create HTTP server.
- */
+io.on('connect_error', (error) => {
+            console.log('Connection Error: ', error);
+          });
+io.on("connection", (socket) => {
+  socket.emit("joined", {
+    status: "success",
+    message: "You have successfully joined the room.",
+  });
+  socket.on('connect_error', (error) => {
+            console.log('Connection Error: ', error);
+          });
+  socket.on("join_room", (data) => {
+    console.log(`join_room`);
+    if (
+      users[data.room] &&
+      users[data.room].some((user) => user.id === socket.id)
+    ) {
+      console.log(`User ${socket.id} is already in the room ${data.room}`);
+      return;
+    }
+    if (users[data.room]) {
+      const length = users[data.room].length;
+      if (length === maximum) {
+        socket.to(socket.id).emit("room_full");
+        return;
+      }
+      users[data.room].push({ id: socket.id, email: data.email });
+    } else {
+      users[data.room] = [{ id: socket.id, email: data.email }];
+    }
+    socketToRoom[socket.id] = data.room;
 
-var server = http.createServer(app);
+    socket.join(data.room);
+    console.log(`[${socketToRoom[socket.id]}]: ${socket.id} enter`);
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+    const usersInThisRoom = users[data.room].filter(
+      (user) => user.id !== socket.id
+    );
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+    console.log(usersInThisRoom);
 
-/**
- * Normalize a port into a number, string, or false.
- */
+    io.sockets.to(socket.id).emit("all_users", usersInThisRoom);
+  });
 
-function normalizePort(val) {
-  var port = parseInt(val, 10);
+  socket.on("offer", (data) => {
+    console.log(data.sdp);
+    socket.to(data.offerReceiveID).emit("getOffer", {
+      sdp: data.sdp,
+      offerSendID: data.offerSendID,
+      offerSendEmail: data.offerSendEmail,
+    });
+  });
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
+  socket.on("answer", (data) => {
+    console.log(data.sdp);
+    socket
+      .to(data.answerReceiveID)
+      .emit("getAnswer", { sdp: data.sdp, answerSendID: data.answerSendID });
+  });
 
-  if (port >= 0) {
-    // port number
-    return port;
-  }
+  socket.on("candidate", (data) => {
+    console.log(data.candidate);
+    socket.to(data.candidateReceiveID).emit("getCandidate", {
+      candidate: data.candidate,
+      candidateSendID: data.candidateSendID,
+    });
+  });
 
-  return false;
-}
+  socket.on("disconnect", () => {
+    console.log(`[${socketToRoom[socket.id]}]: ${socket.id} exit`);
+    const roomID = socketToRoom[socket.id];
+    let room = users[roomID];
+    if (room) {
+      room = room.filter((user) => user.id !== socket.id);
+      users[roomID] = room;
+      if (room.length === 0) {
+        delete users[roomID];
+        return;
+      }
+    }
+    socket.to(roomID).emit("user_exit", { id: socket.id });
+    console.log(users);
+  });
+});
 
-/**
- * Event listener for HTTP server "error" event.
- */
-
-function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
-}
+server.listen(PORT, () => {
+  console.log(`server running on ${PORT}`);
+});
