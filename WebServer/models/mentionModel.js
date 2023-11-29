@@ -49,14 +49,9 @@ exports.findMentionsByWorkId = async (workId) => {
 }
 
 //최근 멘션 조회
-exports.findMetionsDesByworkId = async (workId) => {
-  try {
-    const mention = await db.query('SELECT userId,contents,registerDate FROM mention WHERE workId = ? ORDER BY registerDate DESC LIMIT 5;',[workId])
-    return mention;
-  } catch (error) {
-    console.error('Error in findMetionsDesByworkId:', error);
-    throw error;
-  }
+exports.findAllMention = async() => {
+  const mention = await db.query('SELECT * FROM mention ORDER BY registerDate DESC LIMIT 5')
+  return mention
 }
 
 //멘션 만 삭제

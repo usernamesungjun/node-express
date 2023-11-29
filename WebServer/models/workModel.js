@@ -11,7 +11,12 @@ exports.findByProjectId = async (projectId) => {
 }
 
 exports.findWorkIdByProjectId = async (projectId) => {
-  const work = await db.query('SELECT workId FROM work WHERE projectId = ?',[projectId])
+  const work = await db.query('SELECT workId,workTitle FROM work WHERE projectId = ?',[projectId])
+  return work;
+}
+
+exports.findTitleByWorkId = async (workId) => {
+  const work = await db.query('SELECT workTitle FROM work WHERE workId = ?',[workId])
   return work;
 }
 
