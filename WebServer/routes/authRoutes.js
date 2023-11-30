@@ -28,6 +28,9 @@ router.get('/projects', projectController.getUserProjects)//조회
 router.put('/project/:projectId',projectController.updateProject)//수정
 router.delete('/project/:projectId')//삭제
 
+//프로젝트 관리
+router.get('/project/manage', projectController.projectManage) 
+
 
 //작업
 router.post('/project/work', workController.createWork) //생성

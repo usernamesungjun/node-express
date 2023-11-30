@@ -122,3 +122,35 @@ exports.deleteProject = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+exports.projectManage = async (req,res) => {
+  try {
+    const { projectId } = req.query
+    console.log(req.query)
+
+    const userIds = await JoinProjectModel.findUsersByProjectId(projectId)
+    console.log(userIds)
+
+    const manageData = await Promise.all(userIds.map(async (userId) => {
+      try {
+        const users = await UserModel.findNameByUserId(userId);
+        if (users && users.length > 0 && users[0].name) {
+          return { name: users[0].name };
+        } else {
+          console.log(`No users found or name missing for userId: ${userId}`);
+          return null;
+        }
+      } catch (error) {
+        console.log(`Error fetching user for userId ${userId}:`, error);
+        return null;
+      }
+    }));
+    
+    const validData = manageData.filter(item => item !== null);
+
+    res.status(200).json(validData);
+  } catch (error) {
+    console.error(error); // 에러 로깅
+    res.status(400).json({ message: error.message });
+  }
+}

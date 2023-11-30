@@ -2,7 +2,8 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=database
 
 # 파일 제외
-WebServer\db.js
+
+*.WebServer\db.js
 
 ### Database ###
 *.accdb
