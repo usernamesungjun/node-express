@@ -8,6 +8,7 @@ import Main from "./collaboflow/main"
 import Login from './collaboflow/login';
 import Register from './collaboflow/register';
 import Work from './collaboflow/work';
+import Meeting from './collaboflow/meeting';
 import './index.css';
 
 import 'popper.js';
@@ -27,6 +28,13 @@ root.render(
               <Header />
               <Slidebar />
               <Work />
+            </>
+          } />
+          <Route path="/meeting" element={
+            <>
+              <Header />
+              <Slidebar />
+              <Meeting />
             </>
           } />
           <Route index element={<Navigate to="/login" />} />
