@@ -24,8 +24,8 @@ class Header extends React.Component {
       userProjects: [],
       projectId:[],
       selectedProject: '',
-      selectedProjectId:localStorage.getItem('selectedProjectId') || '',
-      userId: localStorage.getItem('userId') || '',//로그인된 유저ID 가져오기
+      selectedProjectId: JSON.parse(localStorage.getItem('selectedProjectId')) || '',
+      userId: JSON.parse(localStorage.getItem('userId')) || '',//로그인된 유저ID 가져오기
       showNewProjectModal: false,//test
       newProjectData: {
         projectName: '',
@@ -151,6 +151,8 @@ handleEmailChange = (index, value) => {
 
     const url = `http://localhost:3000/projects?userId=${encodeURIComponent(userId)}`
 
+    const storedProjectId = JSON.parse(localStorage.getItem('selectedProjectId')) || '';
+    const storedProjectName = JSON.parse(localStorage.getItem('selectedProjectName')) || '';
       fetch(url)
       .then((response) => {
         if (!response.ok) {
@@ -160,14 +162,16 @@ handleEmailChange = (index, value) => {
       })
       .then((data) => {
         const projectId = data.map((project) => project.projectId);
+        
         // 가져온 데이터로 userProjects 상태를 업데이트
         this.setState({
           userProjects: data,
-          selectedProject: localStorage.getItem('selectedProjectName') || data[0].projectName ||'none',
+          selectedProject: storedProjectName || data[0].projectName ||'none',
           projectId: projectId,
-          selectedProjectId: localStorage.getItem('selectedProjectId')|| projectId[0] ||'',
+          selectedProjectId: storedProjectId || projectId[0] ||'',
           loading: false,
-          selectedProjectName:localStorage.getItem('selectedProjectName')||'',
+          selectedProjectName:storedProjectName || '',
+          
         },
         ()=>{
           localStorage.setItem('selectedProjectId', JSON.stringify(this.state.selectedProjectId));
