@@ -8,7 +8,7 @@ class Work extends React.Component {
 
     this.state = {
       userId: localStorage.getItem('userId'),
-      selectedProjectId: localStorage.getItem('selectedProjectId'),
+      selectedProjectId: localStorage.getItem('selectedProjectId')||'',
       tasks: [],
       newTask: {
         workTitle: '',
@@ -289,7 +289,7 @@ class Work extends React.Component {
               <div className="card">
                 <div className="card-body">
                   <div className="accordion" id="accordionExample">
-                  {tasks.map((task) => (
+                  {Array.isArray(tasks) && tasks.map((task) => (
                     <div className="accordion-item" key={task.workId}>
                       <h2 className="accordion-header" id={`heading${task.workId}`}>
                       <button
@@ -580,19 +580,19 @@ class Work extends React.Component {
         {/* 새로운 UI 엘리먼트 (오른쪽에 배치) */}
           <div className="recentmention">
             <h5>최근 멘션</h5>
-            {this.state.recentMentions.map((mention, index) => (
-              <div key={index} className="card">
-                <div className="card-body">
-                  <label className="labelContainer">
-                    <h5 className="mentionUserName">{mention.name}</h5>
-                    <span className="workName">{mention.workTitle}{' '}</span>
-                    <span className="mentionDate">{mention.registerDate}</span>
-                    <br />
-                    <span className="mentionContent">{mention.content}</span>
-                  </label>
+            {Array.isArray(this.state.recentMentions) && this.state.recentMentions.map((mention, index) => (
+                <div key={index} className="card">
+                  <div className="card-body">
+                    <label className="labelContainer">
+                      <h5 className="mentionUserName">{mention.name}</h5>
+                      <span className="workName">{mention.workTitle}{' '}</span>
+                      <span className="mentionDate">{mention.registerDate}</span>
+                      <br />
+                      <span className="mentionContent">{mention.content}</span>
+                    </label>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
           {/* 새로운 UI 엘리먼트 (오른쪽에 배치) */}
       </main>

@@ -163,11 +163,11 @@ handleEmailChange = (index, value) => {
         // 가져온 데이터로 userProjects 상태를 업데이트
         this.setState({
           userProjects: data,
-          selectedProject: localStorage.getItem('selectedProjectName') || data[0].projectName,
+          selectedProject: localStorage.getItem('selectedProjectName') || data[0].projectName ||'none',
           projectId: projectId,
-          selectedProjectId: localStorage.getItem('selectedProjectId')|| projectId[0],
+          selectedProjectId: localStorage.getItem('selectedProjectId')|| projectId[0] ||'',
           loading: false,
-          selectedProjectName:localStorage.getItem('selectedProjectName'),
+          selectedProjectName:localStorage.getItem('selectedProjectName')||'',
         },
         ()=>{
           localStorage.setItem('selectedProjectId', JSON.stringify(this.state.selectedProjectId));
@@ -178,7 +178,7 @@ handleEmailChange = (index, value) => {
         
       })
       .catch((error) => {
-        console.error('에러:', error);
+        // console.error('에러:', error);
         this.setState({ loading: false });
       });
   }
