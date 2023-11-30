@@ -224,7 +224,7 @@ handleEmailChange = (index, value) => {
             <span className="logo-span">CollaboFlow</span>
           </div>
           <div className='search-bar'>
-            <span className="selected-project" onClick={this.handleProjectDropdown} >{selectedProjectName.replace(/["'\\]/g, '')}</span>
+            <span className="selected-project" onClick={this.handleProjectDropdown} >{selectedProjectName}</span>
           </div>
           <ArrowDownCircleFill
             className="project-plus-btn"

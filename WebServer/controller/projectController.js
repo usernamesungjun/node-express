@@ -32,11 +32,11 @@ exports.createProject = async (req, res) => {
 exports.registerTeam = async (req, res) => {
   try {
     const { projectId } = req.params;
-    const { userIds } = req.body;
+    const { emails } = req.body;
 
     let validUserIds = [];
 
-    for (const userId of userIds) {
+    for (const userId of emails) {
       const userExists = await UserModel.isUserExist(userId);
       const isAlreadyMember = await JoinProjectModel.isUserInProject(userId, projectId);
 

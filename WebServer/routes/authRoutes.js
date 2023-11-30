@@ -48,6 +48,7 @@ router.get('/project/work/metion', mentionController.getMention)
 
 //문서
 router.post('/project/create-document', documentController.createDocument)//생성
-router.get('/project/write-document', documentController.writeDocument)
+router.get('/project/write-document', documentController.writeDocument)//조회
+router.delete('/project/delete-document/:documentId', documentController.deleteDocument)
 
 module.exports = router;

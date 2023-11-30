@@ -6,37 +6,33 @@ class Document extends React.Component {
     super(props);
     this.editorRef = React.createRef();
     this.state = {
+      yorkieName: null,
       doc: null,
       client: null
     };
   }
 
   async componentDidMount() {
-    // Create a Yorkie client and activate it
     const client = new yorkie.Client('https://api.yorkie.dev', {
       apiKey: 'cli78fbprhcevnm8qp8g' // Your API Key here
     });
     await client.activate();
 
-    // Create a document and attach it to the client
-    const doc = new yorkie.Document('editor');
+    const doc = new yorkie.Document(`document-${this.state.yorkieName}`); // 문서 이름 변경
     await client.attach(doc);
 
-    // Subscribe to document changes
     doc.subscribe((event) => {
       if (event.type === 'remote-change') {
         this.editorRef.current.value = doc.getRoot().text;
       }
     });
 
-    // Set up the input listener
     this.editorRef.current.addEventListener('input', () => {
       doc.update((root) => {
         root.text = this.editorRef.current.value;
       });
     });
 
-    // Initialize the document text
     doc.update((root) => {
       if (root.text) {
         this.editorRef.current.value = root.text;
