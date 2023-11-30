@@ -19,14 +19,16 @@ router.put('/myPage', userController.updateMypage)
 
 //유저검색
 router.get('/searchUsers', userController.searchUsers)
+
 //팀원추가
-router.post('/project/:projectId/team',projectController.registerTeam)
+router.put('/project/:projectId/team',projectController.registerTeam)
+//팀원삭제
+router.delete('/project/:projectId/team/:userId', projectController.deleteTeam)
 
 //프로젝트 
 router.post('/project', projectController.createProject) //생성
 router.get('/projects', projectController.getUserProjects)//조회
 router.put('/project/:projectId',projectController.updateProject)//수정
-router.delete('/project/:projectId')//삭제
 
 //프로젝트 관리
 router.get('/project/manage', projectController.projectManage) 

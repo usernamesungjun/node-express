@@ -6,7 +6,6 @@ const jwt = require('../jwt/jwt.js'); // jwt 파일의 정확한 경로를 확�
 exports.createProject = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
-    console.log('authHeader:'. authHeader)
     if (!authHeader) return res.status(401).json({ message: 'No authorization header provided' });
 
     const accessToken = authHeader.split(' ')[1];
@@ -29,23 +28,35 @@ exports.createProject = async (req, res) => {
   }
 };
 
-exports.registerTeam = async (req,res)=>{
+//팀원 등록
+exports.registerTeam = async (req, res) => {
   try {
     const { projectId } = req.params;
-    const { userIds } = req.body; // 여러 userId를 배열로 받음
+    const { userIds } = req.body;
 
-    // userIds 배열의 각 userId에 대해 처리
+    let validUserIds = [];
+
     for (const userId of userIds) {
-      if (!await UserModel.isUserExist(userId)) {
-        return res.status(401).json({ message: `${userId}는 존재하지 않는 유저입니다.` });
+      const userExists = await UserModel.isUserExist(userId);
+      const isAlreadyMember = await JoinProjectModel.isUserInProject(userId, projectId);
+
+      if (userExists && !isAlreadyMember) {
+        validUserIds.push(userId);
+      } else {
+        console.log(`User ${userId} is either non-existent or already a member.`);
       }
+    }
+    
+    for (const userId of validUserIds) {
       await JoinProjectModel.addUserToProject(userId, projectId);
     }
-    res.status(201).json({ message: '팀원들이 등록되었습니다.' });
+
+    res.status(201).json({ message: 'Valid team members have been registered.' });
   } catch (error) {
+    console.error('Error in registerTeam:', error);
     res.status(500).json({ message: error.message });
   }
-}
+};
 
 exports.getUserProjects = async (req, res) => {
   try {
@@ -64,7 +75,6 @@ exports.getUserProjects = async (req, res) => {
       return { projectName: projectData.projectName, projectId: projectData.projectId };
     });
 
-    console.log('원하는 프로젝트 이름들 : ', projects);
     res.status(200).json(projects);
   } catch (error) {
     console.error(error);
@@ -72,12 +82,11 @@ exports.getUserProjects = async (req, res) => {
   }
 };
 
+//프로젝트 업데이트
 exports.updateProject = async (req, res) => {
   try {
     const newData  = req.body;
     const { projectId } = req.params;
-    console.log('1. body',newData)
-    console.log('2. params',projectId)
 
     if (!newData || Object.keys(newData).length === 0) {
       return res.status(400).json({ message: 'No update data provided' });
@@ -96,6 +105,7 @@ exports.updateProject = async (req, res) => {
   }
 };
 
+//프로젝트 삭제
 exports.deleteProject = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -103,7 +113,6 @@ exports.deleteProject = async (req, res) => {
 
     const accessToken = authHeader.split(' ')[1];
     const decoded = jwt.verify(accessToken); // 비밀키와 함께 토큰을 검증합니다.
-    console.log(decoded)
     const userId = decoded.userId; // ownerId는 디코딩된 토큰에서 userId를 가져옵니다.
 
     const { projctId } = req.params
@@ -115,7 +124,6 @@ exports.deleteProject = async (req, res) => {
 
     await JoinProjectModel.deleteJoinProject(projctId)
 
-
     res.status(200).json({message:'프로젝트가 성공적으로 삭제되었습니다.'});
   } catch (error) {
     console.error(error); // 에러 로깅
@@ -123,13 +131,12 @@ exports.deleteProject = async (req, res) => {
   }
 };
 
+//프로젝트 관리 조회
 exports.projectManage = async (req,res) => {
   try {
     const { projectId } = req.query
-    console.log(req.query)
 
     const userIds = await JoinProjectModel.findUsersByProjectId(projectId)
-    console.log(userIds)
 
     const manageData = await Promise.all(userIds.map(async (userId) => {
       try {
@@ -145,10 +152,28 @@ exports.projectManage = async (req,res) => {
         return null;
       }
     }));
-    
+
     const validData = manageData.filter(item => item !== null);
 
     res.status(200).json(validData);
+  } catch (error) {
+    console.error(error); // 에러 로깅
+    res.status(400).json({ message: error.message });
+  }
+}
+
+//팀원삭제
+exports.deleteTeam = async (req,res) => {
+  try {
+    const {userId, projectId} = req.params
+    console.log(req.params)
+    
+    const isUserExist = await JoinProjectModel.isUserExist(userId)
+    if(!isUserExist) return res.status(400).json({message: 'Not exist user'})
+
+    await JoinProjectModel.deleteProjectByUserId(userId,projectId)
+
+    res.status(200).json({message:'팀원이 성공적으로 탈퇴되었습니다.'});
   } catch (error) {
     console.error(error); // 에러 로깅
     res.status(400).json({ message: error.message });
