@@ -8,6 +8,9 @@ class Header extends React.Component {
   goToLoginPage = () => {
     window.location.href = '/login';
   };
+  goToMyPage = () => {
+    window.location.href = '/mypage';
+  };
 
   constructor(props) {
     super(props);
@@ -268,7 +271,7 @@ handleEmailChange = (index, value) => {
           ) : (
             <button type="button" className='login' class="btn btn-info" onClick={this.goToLoginPage}>Login</button>
           )}
-          <button type="button" className='mypage' class="btn btn-primary" >Mypage</button>
+          <button type="button" className='mypage' class="btn btn-primary" onClick={this.goToMyPage}>Mypage</button>
         </div>
       </header>
     );

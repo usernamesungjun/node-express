@@ -8,6 +8,7 @@ import Login from './collaboflow/login';
 import Register from './collaboflow/register';
 import Work from './collaboflow/work';
 import Mypage from './collaboflow/mypage'
+import Document from './collaboflow/document';
 
 import './index.css'
 import 'popper.js';
@@ -38,6 +39,14 @@ root.render(
             <Mypage />
           </>
         } />
+        <Route path="/project/document" element={
+          <>
+            <Header />
+            <Slidebar />
+            <Document />
+          </>
+        } />
+
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

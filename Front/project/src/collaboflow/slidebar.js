@@ -3,16 +3,16 @@ import 'bootstrap/dist/css/bootstrap.css';
 
 class Sidebar extends React.Component {
   goToWorkPage = () => {
-    window.location.href = '/work';
+    window.location.href = '/project/works';
   };
   goToMeetingRoomPage = () => {
-    window.location.href = '/meeting';
+    window.location.href = '/project/meeting';
   };
   goToDocumentPage = () => {
-    window.location.href = '/document';
+    window.location.href = '/project/document';
   };
   goToSchedulePage = () => {
-    window.location.href = '/schedule';
+    window.location.href = '/project/schedule';
   };
   render(){
   return (
