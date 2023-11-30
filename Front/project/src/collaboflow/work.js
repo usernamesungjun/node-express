@@ -1,19 +1,23 @@
 import React from 'react';
+import { PencilSquare,TrashFill } from 'react-bootstrap-icons';
+
 
 class Work extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      userId: localStorage.getItem('userId'),
       selectedProjectId: localStorage.getItem('selectedProjectId'),
       tasks: [],
       newTask: {
-        title: '',
-        content: '',
-        taskState:'',
+        workTitle: '',
+        workState:'2',
       },
       isModalOpen: false, // Add the state for modal visibility
       recentMentions: [],
+      newMention:'',
+      editingMentionId: null,
     };
   }
   componentDidMount() {
@@ -55,26 +59,26 @@ class Work extends React.Component {
   handleAddTask = async () => {
     try {
       const { newTask, selectedProjectId } = this.state;
-  
-      const response = await fetch('http://localhost:3000/project/works', {
+      console.log('newTask',newTask,'projectId: ',selectedProjectId);
+      const response = await fetch(`http://localhost:3000/project/work?projectId=${encodeURIComponent(selectedProjectId)}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ ...newTask, projectId: selectedProjectId }),
+        
       });
-  
+      console.log(response.body);
       if (!response.ok) {
         throw new Error('Failed to add task');
       }
       const data = await response.json();
-      
+      console.log('Task added successfully:', data);
       this.setState((prevState) => ({
         tasks: [...prevState.tasks, data],
         newTask: {
-          title: '',
-          content: '',
-          taskState: '',
+          workTitle: '',
+          workState: '',
         },
         isModalOpen: false,
       }));
@@ -85,6 +89,7 @@ class Work extends React.Component {
 
   handleInputChange = (e) => {
     const { name, value } = e.target;
+  
     this.setState((prevState) => ({
       newTask: {
         ...prevState.newTask,
@@ -99,6 +104,98 @@ class Work extends React.Component {
 
   closeModal = () => {
     this.setState({ isModalOpen: false });
+  };
+
+  handleMentionChange = (e) => {
+    this.setState({ newMention: e.target.value });
+  };
+
+  registMention = async (workId) => {
+    try {
+      const { newMention, userId } = this.state;
+  
+      const response = await fetch(`http://localhost:3000/project/work/mention?projectId=${encodeURIComponent(workId)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ contents: newMention, userId, workId }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to register mention');
+      }
+  
+      const data = await response.json();
+      console.log('Mention registered successfully:', data);
+  
+    } catch (error) {
+      console.error('Error registering mention:', error);
+    }
+  };
+
+  deleteMention = async (mentionId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/project/work/mention/${encodeURIComponent(mentionId)}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to delete Mention');
+      }
+
+    } catch (error) {
+      console.error('Error delete mention:', error);
+    }
+  };
+
+  modifyMention = (mentionId) => {
+    // Set the editingMentionId when PencilSquare is clicked
+    this.setState({ editingMentionId: mentionId });
+  
+    // You can also pre-fill the newMention with the existing content if needed
+    const editingMention = this.state.tasks
+      .flatMap((task) => task.mentions)
+      .find((mention) => mention.mentionId === mentionId);
+  
+    if (editingMention) {
+      this.setState({ newMention: editingMention.content });
+    }
+  };
+  
+  handleEditComplete = async () => {
+    try {
+      const { newMention, editingMentionId } = this.state;
+  
+      if (!editingMentionId) {
+        // If editingMentionId is not set, do nothing
+        return;
+      }
+  
+      // Update the mention content
+      const response = await fetch(`http://localhost:3000/project/work/mention/${encodeURIComponent(editingMentionId)}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ contents: newMention }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to modify mention');
+      }
+  
+      // Fetch the updated data and update the state
+      await this.fetchWorks();
+  
+      // Clear the editing state after the operation
+      this.setState({ editingMentionId: null, newMention: '' });
+    } catch (error) {
+      console.error('Error modifying mention:', error);
+    }
   };
 
   render() {
@@ -124,12 +221,11 @@ class Work extends React.Component {
 
         <section className="section">
           <div className="row">
-            <div className="col-lg-6">
+            <div className="col-xl-7">
               <div className="card">
                 <div className="card-body">
                   <div className="accordion" id="accordionExample">
                   {tasks.map((task) => (
-                     console.log(task.mentions),
                     <div className="accordion-item" key={task.workId}>
                       <h2 className="accordion-header" id={`heading${task.workId}`}>
                         <button
@@ -158,14 +254,48 @@ class Work extends React.Component {
                                   <span className="mentionDate">{mention.registerDate}</span>
                                   <br />
                                   <span className="mentionContent">{mention.content}</span>
+                                  <TrashFill
+                                   onClick={() => this.deleteMention(mention.mentionId)}
+                                  />
+                                  <PencilSquare
+                                  onClick={() => this.modifyMention(mention.mentionId)}
+                                  />
+                                  
                                 </div>
                               ))}
                             </div>
+                            
                           ) : (
-                            <div>멘션이 없습니다.</div>
+                            <div/>
                           )}
+                          <div className="row mb-5">
+                              <label htmlFor="rgistMention" className="col-sm-3 col-form-label">멘션 추가</label>
+                              <div className="col-sm-9  d-flex">
+                              <input
+                                  type="text"
+                                  className="form-control flex-grow-1 me-3"
+                                  id="rgistMention"
+                                  value={this.state.newMention}  // Bind the value to newMention state
+                                  onChange={this.handleMentionChange}  // Add onChange handler
+                                />
+                                <button type="submit" className="btn btn-primary" onClick={() => this.registMention(task.workId)}>등록</button>
+                              </div>
+                            </div>
+                            {this.state.editingMentionId && (
+                              <div className="row mb-5">
+                                <div className="col-sm-9 d-flex">
+                                  <button
+                                    type="button"
+                                    className="btn btn-success"
+                                    onClick={this.handleEditComplete}
+                                  >
+                                    수정 완료
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                        </div>
                       </div>
-                    </div>
                   </div>
                 ))}
                   </div>
@@ -197,28 +327,51 @@ class Work extends React.Component {
                   ></button>
                 </div>
                 <div className="modal-body">
-                  <form>
+                <form>
+                  <label>
+                    작업 이름:{' '}
+                    <input
+                      type="text"
+                      name="workTitle"
+                      value={newTask.workTitle}
+                      onChange={this.handleInputChange}
+                      className="rounded-input"
+                    />
+                  </label>
+                  <label>
+                    작업 상태:{' '}
                     <label>
-                      작업 이름:{' '}
                       <input
-                        type="text"
-                        name="title"
-                        value={newTask.title}
+                        type="radio"
+                        name="workState"
+                        value="1"
+                        checked={newTask.workState === '1'}
                         onChange={this.handleInputChange}
-                        className="rounded-input"
                       />
+                      진행 예정{'  '}
                     </label>
                     <label>
-                      작업 내용:{' '}
                       <input
-                        type="text"
-                        name="content"
-                        value={newTask.content}
+                        type="radio"
+                        name="workState"
+                        value="2"
+                        checked={newTask.workState === '2'}
                         onChange={this.handleInputChange}
-                        className="rounded-input"
                       />
+                      진행 중{'  '}
                     </label>
-                  </form>
+                    <label>
+                      <input
+                        type="radio"
+                        name="workState"
+                        value="3"
+                        checked={newTask.workState === '3'}
+                        onChange={this.handleInputChange}
+                      />
+                      완료
+                    </label>
+                  </label>
+                </form>
                 </div>
                 <div className="modal-footer">
                   <button
