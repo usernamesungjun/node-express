@@ -7,8 +7,8 @@ class Work extends React.Component {
     super(props);
 
     this.state = {
-      userId: localStorage.getItem('userId'),
-      selectedProjectId: localStorage.getItem('selectedProjectId')||'',
+      userId: JSON.parse(localStorage.getItem('userId')),
+      selectedProjectId: JSON.parse(localStorage.getItem('selectedProjectId'))||'',
       tasks: [],
       newTask: {
         workTitle: '',
