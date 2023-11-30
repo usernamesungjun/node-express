@@ -50,18 +50,13 @@ exports.getProjectWork = async (req, res) => {
 exports.updateProjectWork = async (req,res) => {
   try {
     const newData = req.body
-    const {projectId, workId} = req.params
+    const {workId} = req.params
   
     if (!newData || Object.keys(newData).length === 0) {
       return res.status(400).json({ message: 'No update data provided' });
     }
-    
-    const workExists = await workModel.findWorkIdByProjectId(projectId);
-    if (!workExists) {
-      return res.status(404).json({ message: 'Work not found' });
-    }
 
-    await workModel.updateWork(projectId,workId,newData);
+    await workModel.updateWork(workId,newData);
     res.status(200).json({ message: 'Work updated successfully' });
   } catch (error) {
     console.error(error);

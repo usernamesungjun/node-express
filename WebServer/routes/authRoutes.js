@@ -35,7 +35,7 @@ router.get('/project/manage', projectController.projectManage)
 //작업
 router.post('/project/work', workController.createWork) //생성
 router.get('/project/works', workController.getProjectWork) //조회
-router.put('/project/:projectId/work/:workId',workController.updateProjectWork)//수정
+router.put('/project/work/:workId',workController.updateProjectWork)//수정
 router.delete('/project/work/:workId',workController.deleteWork)//삭제
 
 //멘션

@@ -20,7 +20,7 @@ exports.findTitleByWorkId = async (workId) => {
   return work;
 }
 
-exports.updateWork = async(projectId,workId,newData) =>{
+exports.updateWork = async(workId,newData) =>{
   const updates = [];
   const values = [];
 
@@ -36,8 +36,7 @@ exports.updateWork = async(projectId,workId,newData) =>{
     throw new Error('No updates provided');
   }
 
-  const query = `UPDATE work SET ${updates.join(', ')} WHERE projectId = ? AND workId = ?`;
-  values.push(projectId);
+  const query = `UPDATE work SET ${updates.join(', ')} WHERE workId = ?`;
   values.push(workId)
 
   try {
