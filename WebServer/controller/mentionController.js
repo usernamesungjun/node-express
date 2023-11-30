@@ -7,7 +7,6 @@ const userModel = require('../models/userModel.js')
 exports.createMention = async (req, res) => {
   try {
     const { workId, userId , contents} = req.body;
-    console.log('createMention: ',workId, userId , contents)
     const registerDate = moment().tz('Asia/Seoul').format()
 
     const newMentionId = await mentionModel.createMention(workId, userId, contents, registerDate)
@@ -22,7 +21,6 @@ exports.createMention = async (req, res) => {
 exports.getMention = async (req,res) => {
   try {
     const { projectId } = req.query
-    console.log(req.query)
 
     const isProjectExist = await projectModel.isProjectExist(projectId)
     if (!isProjectExist) return res.status(404).json({ message: '존재하지 않는 project입니다.' });
@@ -62,7 +60,6 @@ exports.updateMention = async (req,res) => {
   try {
     const newData = req.body
     const {mentionId} = req.params
-    console.log('UpdateMention: ', '/body' , newData,' /mentionId ', mentionId)
 
     const updateDate = moment().tz('Asia/Seoul').format()
     newData.registerDate = updateDate

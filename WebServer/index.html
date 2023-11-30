@@ -8,11 +8,11 @@
   <script>
     async function main() {
       const client = new yorkie.Client('https://api.yorkie.dev', {
-        apiKey: 'cli6r13prhcevnm8qntg'
+        apiKey: ''
       });
       await client.activate();
 
-      const doc = new yorkie.Document('회의록');
+      const doc = new yorkie.Document('editor');
       await client.attach(doc);
 
       doc.update((root) => {

@@ -6,7 +6,6 @@ const userModel = require('../models/userModel.js')
 exports.createWork = async (req, res) => {
   try {
     const {projectId ,workTitle, workState} = req.body
-    console.log('작업생성요청', req.body)
 
     const newWorkId = await workModel.creatWork(projectId ,workTitle, workState);
 
@@ -30,7 +29,6 @@ exports.getProjectWork = async (req, res) => {
     const mentionsWithUserNames = await Promise.all(mentions.map(async (mention) => {
       const user = await userModel.findNameByUserId(mention.userId);
       const userName = user.length > 0 ? user[0].name : 'Unknown';
-      console.log(userName)
       return {
         mentionId: mention.mentionId,
         name: userName,
@@ -66,8 +64,7 @@ exports.updateProjectWork = async (req,res) => {
 
 exports.deleteWork = async (req,res) => {
   try {
-    const {projectId,workId} = req.params
-    console.log('deleteing Work','projectId: ',projectId,'workId: ',workId)
+    const {workId} = req.params
 
     await mentionModel.deleteMentionByWorkId(workId)
     await workModel.deleteWorkByWorkId(workId)
