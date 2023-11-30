@@ -11,6 +11,9 @@ class Header extends React.Component {
   goToMyPage = () => {
     window.location.href = '/mypage';
   };
+  goToWorkPage = () => {
+    window.location.href = '/project/works';
+  };
 
   constructor(props) {
     super(props);
@@ -21,13 +24,14 @@ class Header extends React.Component {
       userProjects: [],
       projectId:[],
       selectedProject: '',
-      selectedProjectId:'',
+      selectedProjectId:localStorage.getItem('selectedProjectId') || '',
       userId: localStorage.getItem('userId') || '',//로그인된 유저ID 가져오기
       showNewProjectModal: false,//test
       newProjectData: {
         projectName: '',
         teamMembers: [''],
       },
+      selectedProjectName:localStorage.getItem('selectedProjectName'),
     };
   }
  // 새 이메일 필드 추가
@@ -95,7 +99,6 @@ handleEmailChange = (index, value) => {
   
     // 로컬 스토리지에서 토큰을 가져옵니다.
     const token = JSON.parse(localStorage.getItem('jwt'));
-    console.log(token)
   
     //팀원 수 설정
     const teamMembersCount = newProjectData.teamMembers.length + 1; // 1은 자신을 나타냅니다.
@@ -143,8 +146,7 @@ handleEmailChange = (index, value) => {
       showProjectDropdown: !prevState.showProjectDropdown,
     }));
   };
-
-  componentDidMount() {
+  userProjectLoading(){
     const userId = this.state.userId; // userId 가져오기
 
     const url = `http://localhost:3000/projects?userId=${encodeURIComponent(userId)}`
@@ -158,24 +160,34 @@ handleEmailChange = (index, value) => {
       })
       .then((data) => {
         const projectId = data.map((project) => project.projectId);
-        console.log('클라이언트에서 받은 데이터:', data); // 이 줄을 추가
         // 가져온 데이터로 userProjects 상태를 업데이트
         this.setState({
           userProjects: data,
-          selectedProject: data.length > 0 ? data[0].projectName : '',
+          selectedProject: localStorage.getItem('selectedProjectName') || data[0].projectName,
           projectId: projectId,
-          selectedProjectId: projectId.length > 0 ? projectId[0] : '',
+          selectedProjectId: localStorage.getItem('selectedProjectId')|| projectId[0],
           loading: false,
+          selectedProjectName:localStorage.getItem('selectedProjectName'),
+        },
+        ()=>{
+          localStorage.setItem('selectedProjectId', JSON.stringify(this.state.selectedProjectId));
+          localStorage.setItem('selectedProjectName', JSON.stringify(this.state.selectedProject));
+          console.log('왜안돼',this.state.selectedProject)
+          console.log('왜안돼1',this.state.selectedProjectName)
         });
-        localStorage.setItem('selectedProjectId', JSON.stringify(this.state.selectedProjectId)); // selectedProjectId 저장
-        console.log('userProjects 데이터:', this.state.userProjects);
-        console.log('projectIds:', this.state.projectId);
-        console.log('selected:',this.state.selectedProjectId);
+        
       })
       .catch((error) => {
         console.error('에러:', error);
         this.setState({ loading: false });
       });
+  }
+  componentDidMount() {
+    this.fetchData();
+  }
+
+  fetchData = async () => {
+    await this.userProjectLoading();
   }
 
   // 프로젝트를 선택할 때 실행되는 핸들러
@@ -188,12 +200,13 @@ handleEmailChange = (index, value) => {
     }, () => {
       // 선택한 프로젝트로 seletedProjectId 변경
       localStorage.setItem('selectedProjectId', JSON.stringify(this.state.selectedProjectId));
+      localStorage.setItem('selectedProjectName', JSON.stringify(this.state.selectedProject));
+      this.goToWorkPage();
     });
   };
 
   render() {
-    const { selectedProject, userProjects , loading } = this.state;
-
+    const { selectedProject, userProjects , loading, selectedProjectName } = this.state;
     const projectDropdownClass = this.state.showProjectDropdown ? "project-dropdown show" : "project-dropdown";
 
     if (loading) {
@@ -207,7 +220,7 @@ handleEmailChange = (index, value) => {
             <span className="logo-span">CollaboFlow</span>
           </div>
           <div className='search-bar'>
-            <span className="selected-project" onClick={this.handleProjectDropdown} >{selectedProject}</span>
+            <span className="selected-project" onClick={this.handleProjectDropdown} >{selectedProjectName.replace(/["'\\]/g, '')}</span>
           </div>
           <ArrowDownCircleFill
             className="project-plus-btn"
