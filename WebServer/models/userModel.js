@@ -61,3 +61,12 @@ exports.updatePw = async (pw,userId) => {
   return result.affectedRows
 }
 
+exports.findUserIdByEmail = async (email) => {
+  const user = await db.query('SELECT userId FROM user WHERE email = ?', [email]);
+  return user[0]
+}
+
+exports.isEmailExist = async (email) => {
+  const result = await db.query('SELECT * FROM user WHERE email = ?', [email])
+  return result.length>0
+}

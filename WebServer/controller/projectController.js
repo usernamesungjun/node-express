@@ -32,18 +32,26 @@ exports.createProject = async (req, res) => {
 exports.registerTeam = async (req, res) => {
   try {
     const { projectId } = req.params;
-    const { emails } = req.body;
+    const { emails } = req.body; // Array of emails
 
     let validUserIds = [];
 
-    for (const userId of emails) {
-      const userExists = await UserModel.isUserExist(userId);
-      const isAlreadyMember = await JoinProjectModel.isUserInProject(userId, projectId);
-
-      if (userExists && !isAlreadyMember) {
-        validUserIds.push(userId);
+    for (const email of emails) {
+      const emailExists = await UserModel.isEmailExist(email);
+      if (emailExists) {
+        const user = await UserModel.findUserIdByEmail(email);
+        if (user) {
+          const userId = user.userId;
+          console.log(userId)
+          const isAlreadyMember = await JoinProjectModel.isUserInProject(userId, projectId);
+          if (!isAlreadyMember) {
+            validUserIds.push(userId);
+          } else {
+            console.log(`User with email ${email} is already a member.`);
+          }
+        }
       } else {
-        console.log(`User ${userId} is either non-existent or already a member.`);
+        console.log(`Email ${email} does not exist.`);
       }
     }
     
