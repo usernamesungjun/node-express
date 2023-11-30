@@ -5,6 +5,7 @@ exports.addUserToProject = async (userId, projectId) => {
   await db.query(sql, [userId, projectId]);
 };
 
+//projectId로 userId찾기
 exports.findUsersByProjectId = async (projectId) => {
   const sql = 'SELECT userId FROM joinproject WHERE projectId = ?';
   try {
@@ -16,6 +17,7 @@ exports.findUsersByProjectId = async (projectId) => {
   }
 };
 
+//userId로 projectId찾기
 exports.findProjectsByUserId = async (userId) => {
   const sql = 'SELECT projectId FROM joinproject WHERE userId = ?';
   try {
@@ -28,10 +30,10 @@ exports.findProjectsByUserId = async (userId) => {
 };
 
 //프로젝트 탈퇴
-exports.deleteProjectByUserId = async (userId) => {
-  const query = 'DELETE FROM joinproject WHERE userId = ?';
+exports.deleteProjectByUserId = async (userId,projectId) => {
+  const query = 'DELETE FROM joinproject WHERE userId = ? AND projectId = ?';
   try {
-    const result = await db.query(query, [userId]);
+    const result = await db.query(query, [userId,projectId]);
     return result.affectedRows;
   } catch (error) {
     console.error('Error in secession:', error);
@@ -49,4 +51,15 @@ exports.deleteJoinProject = async (projectId) => {
     console.error('Error in secession:', error);
     throw error;
   }
+}
+
+//팀원 존재 여부
+exports.isUserExist = async (userId) => {
+  const result = await db.query('SELECT * FROM joinproject WHERE userId = ?', [userId])
+  return result.length>0
+}
+
+exports.isUserInProject = async (userId, projectId) => {
+  const result = await db.query('SELECT * FROM joinproject WHERE userId = ? AND projectId = ?', [userId, projectId])
+  return result.length>0
 }
