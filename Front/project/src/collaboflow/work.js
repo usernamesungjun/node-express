@@ -24,7 +24,6 @@ class Work extends React.Component {
   }
   componentDidMount() {
     this.fetchData();
-    console.log('처음 데이터',this.state.tasks)
   }
   
   fetchData = async () => {
@@ -37,8 +36,6 @@ class Work extends React.Component {
       const selectedProjectId = this.state.selectedProjectId;
       const response = await fetch(`http://localhost:3000/project/works?projectId=${encodeURIComponent(selectedProjectId)}`);
       const data = await response.json();
-      console.log('id:', this.state.selectedProjectId);
-      console.log('Fetched data:', data);
       this.setState((prevState) => ({
         tasks:data,
       }));

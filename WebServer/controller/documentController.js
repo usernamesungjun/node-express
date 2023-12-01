@@ -4,7 +4,7 @@ const userModel = require('../models/userModel.js')
 const { v4: uuidv4 } = require('uuid');
 
 exports.createDocument = async (req, res) => {
-  const { projectId, documentName } = req.body;
+  const { documentName,projectId } = req.body;
   console.log("문서 생성요청", req.body);
 
   try {
