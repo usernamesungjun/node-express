@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import yorkie from 'yorkie-js-sdk';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 class Document extends React.Component {
   constructor(props) {
@@ -8,11 +9,14 @@ class Document extends React.Component {
     this.state = {
       yorkieName: null,
       doc: null,
-      client: null
+      client: null,
+      documentId:'',
     };
   }
 
   async componentDidMount() {
+    this.openDoc();
+    
     const client = new yorkie.Client('https://api.yorkie.dev', {
       apiKey: 'cli78fbprhcevnm8qp8g' // Your API Key here
     });
@@ -40,6 +44,7 @@ class Document extends React.Component {
         root.text = 'Edit me.';
       }
     });
+
   }
 
   async componentWillUnmount() {
@@ -52,8 +57,20 @@ class Document extends React.Component {
     }
 
     // Reset the state
-    this.setState({ doc: null, client: null });
+    // this.setState({ doc: null, client: null });
   }
+  openDoc = async () => {
+    try {
+      const seletedDocId = JSON.parse(localStorage.getItem('selectedDocumentId'));
+      const response = await fetch(`http://localhost:3000/project/write-document?documentId=${encodeURIComponent(seletedDocId)}`);
+      const data = await response.json();
+  
+      this.setState({ doc: data.documentName, yorkieName: data.yorkieName });
+    } catch (error) {
+      console.error('Error fetching recent mentions:', error);
+    }
+    console.log('test: ',this.state.doc,this.state.yorkieName)
+  };
 
   render() {
     return (

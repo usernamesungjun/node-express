@@ -1,7 +1,6 @@
 import React from 'react';
 
 class DashBoard extends React.Component{
-
     constructor(props) {
         super(props);
     
@@ -13,6 +12,7 @@ class DashBoard extends React.Component{
           newDocName:'',
           documents:[],
         };
+        
       }
       openModal = () => {
         this.setState({ isModalOpen: true });
@@ -53,20 +53,24 @@ class DashBoard extends React.Component{
     viewDocument = async () => {
         try {
           const selectedProjectId = this.state.selectedProjectId;
-          const response = await fetch(`http://localhost:3000/project/write-document?projectId=${encodeURIComponent(selectedProjectId)}`);
+          const response = await fetch(`http://localhost:3000/project/document?projectId=${encodeURIComponent(selectedProjectId)}`);
           const data = await response.json();
     
-          this.setState({document:data});
-          console.log(data)
+          this.setState({documents:data});
         } catch (error) {
           console.error('Error fetching recent mentions:', error);
         }
-        
+        console.log('doc',this.state.documents)
       };
 
       componentDidMount(){
         this.viewDocument();
       }
+      moveToDoc = (documentId) => {
+        localStorage.setItem('selectedDocumentId', JSON.stringify(documentId));
+        window.location.href = '/project/document';
+      };
+      
 
     render(){
         const selectedProjectName = this.state.selectedProjectName;
@@ -103,41 +107,15 @@ class DashBoard extends React.Component{
                                 </tr>
                             </thead>
                         <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Brandon Jacob</td>
-                                <td>Designer</td>
-                                <td>28</td>
-                                <td>2016-05-25</td>
+                        {this.state.documents.map((document, index) => (
+                            <tr key={index}>
+                            <th scope="row">{document.documentId}</th>
+                            <td onClick={() => this.moveToDoc(document.documentId)}>{document.documentName}</td>
+                            <td>{' '}</td>
+                            <td>{' '}</td>
+                            <td>{document.registerDate}</td>
                             </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>Bridie Kessler</td>
-                                <td>Developer</td>
-                                <td>35</td>
-                                <td>2014-12-05</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td>Ashleigh Langosh</td>
-                                <td>Finance</td>
-                                <td>45</td>
-                                <td>2011-08-12</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">4</th>
-                                <td>Angus Grady</td>
-                                <td>HR</td>
-                                <td>34</td>
-                                <td>2012-06-11</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">5</th>
-                                <td>Raheem Lehner</td>
-                                <td>Dynamic Division Officer</td>
-                                <td>47</td>
-                                <td>2011-04-19</td>
-                            </tr>
+                        ))}
                         </tbody>
                         </table>
                     </div>
