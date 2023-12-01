@@ -7,6 +7,7 @@ class Header extends React.Component {
   
   goToLoginPage = () => {
     window.location.href = '/login';
+    localStorage.clear();
   };
   goToMyPage = () => {
     window.location.href = '/mypage';

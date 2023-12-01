@@ -1,6 +1,5 @@
 import React from 'react';
-import { Justify, PencilSquare,TrashFill } from 'react-bootstrap-icons';
-
+import { Justify, PencilSquare,TrashFill} from 'react-bootstrap-icons';
 
 class Work extends React.Component {
   constructor(props) {
@@ -332,23 +331,17 @@ class Work extends React.Component {
                           {task.mentions && task.mentions.length > 0 ? (
                             <div>
                               {task.mentions.map((mention, index) => (
-                                <div key={index}>
-                                  <h5 className="mentionUserName">{mention.name}</h5>
+                                <div key={index} className='mention-container'>
+                                  <h5 className="mentionUserName">{mention.name}
+                                      <TrashFill onClick={() => this.deleteMention(mention.mentionId)} />
+                                      <PencilSquare onClick={() => this.modifyMention(mention.mentionId)} />
+                                  </h5>
                                   <span className="mentionDate">{mention.registerDate}</span>
                                   <br />
                                   <span className="mentionContent">{mention.content}</span>
-                                  <TrashFill
-                                   onClick={() => this.deleteMention(mention.mentionId)}
-                                  />
-                                  <PencilSquare
-                                  onClick={() => this.modifyMention(mention.mentionId)}
-                                  />
                                 </div>
-                                
                               ))}
-                              
                             </div>
-                            
                           ) : (
                             <div/>
                           )}
@@ -363,7 +356,8 @@ class Work extends React.Component {
                                   value={this.state.newMention}  
                                   onChange={this.handleMentionChange}  
                                 />
-                                <button type="submit" className="btn btn-primary" onClick={() => this.registMention(task.workId)}>등록</button>
+                              
+                                <button type="submit" className="btn btn-primary" onClick={() => this.registMention(task.workId)}>V</button>
                                 
                               </div>
                               

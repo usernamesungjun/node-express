@@ -113,8 +113,15 @@ class Project extends React.Component{
         return(
             <main id="main" className="main">
                 <div className="pagetitle">
-                    <h1>선택한 프로젝트</h1>
-                </div>
+                    <h1>선택한 프로젝트{'  '}<button type="button" 
+                                        className="btn btn-success"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#newModal"
+                                        onclick={this.openModal}>
+                                    프로젝트 팀원 초대
+                                    </button></h1>           
+                    </div>
+                
 
                 <section className="section">
                     <div className="row">
@@ -131,15 +138,7 @@ class Project extends React.Component{
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="col-auto">
-                        <button type="button" 
-                            className="btn btn-success"
-                            data-bs-toggle="modal"
-                            data-bs-target="#newModal"
-                            onclick={this.openModal}>
-                          프로젝트 팀원 초대 테스트
-                        </button>
-                        </div>
+                                
                             </div>
                         </div>
                     </div>

@@ -319,6 +319,9 @@ h6 {
 .breadcrumb a:hover {
   color: #51678f;
 }
+.mention-container {
+  border-bottom: 2px solid #ebeef4;
+}
 
 .breadcrumb .breadcrumb-item::before {
   color: #899bbd;
@@ -331,7 +334,7 @@ h6 {
 
 /* Bordered Tabs */
 .nav-tabs-bordered {
-  border-bottom: 2px solid #ebeef4;
+  border-bottom: 0.5px solid #ebeef4;
 }
 
 .nav-tabs-bordered .nav-link {
