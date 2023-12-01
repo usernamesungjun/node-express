@@ -22,6 +22,7 @@ router.get('/searchUsers', userController.searchUsers)
 
 //팀원추가
 router.put('/project/:projectId/team',projectController.registerTeam)
+
 //팀원삭제
 router.delete('/project/:projectId/team/:userId', projectController.deleteTeam)
 
@@ -50,5 +51,8 @@ router.get('/project/work/metion', mentionController.getMention)
 router.post('/project/create-document', documentController.createDocument)//생성
 router.get('/project/write-document', documentController.writeDocument)//조회
 router.delete('/project/delete-document/:documentId', documentController.deleteDocument)
+
+//문서함 조회
+router.get('/project/document',documentController.getDocument)
 
 module.exports = router;
