@@ -9,6 +9,7 @@ import Register from './collaboflow/register';
 import Work from './collaboflow/work';
 import Mypage from './collaboflow/mypage'
 import Document from './collaboflow/document';
+import Project from './collaboflow/project';
 
 import './index.css'
 import 'popper.js';
@@ -44,6 +45,13 @@ root.render(
             <Header />
             <Slidebar />
             <Document />
+          </>
+        } />
+        <Route path="/project" element={
+          <>
+            <Header />
+            <Slidebar />
+            <Project />
           </>
         } />
 

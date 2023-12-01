@@ -26,50 +26,42 @@ class Header extends React.Component {
       selectedProject: '',
       selectedProjectId: JSON.parse(localStorage.getItem('selectedProjectId')) || '',
       userId: JSON.parse(localStorage.getItem('userId')) || '',//로그인된 유저ID 가져오기
-      showNewProjectModal: false,//test
+      showNewProjectModal: false,
       newProjectData: {
         projectName: '',
-        teamMembers: [''],
+        teamMembers: '',
+        personnel: 1,
       },
       selectedProjectName:localStorage.getItem('selectedProjectName'),
     };
   }
- // 새 이메일 필드 추가
-addEmailField = () => {
-  if (this.state.newProjectData.teamMembers.length < 3) {
-    this.setState((prevState) => ({
-      newProjectData: {
-        ...prevState.newProjectData,
-        teamMembers: [...prevState.newProjectData.teamMembers, ''],
-      },
-    }));
-  }
+  
+goToProjectPage= () => {
+  window.location.href = '/project';
 };
 
-// 이메일 필드 제거
-removeEmailField = (index) => {
-  if (this.state.newProjectData.teamMembers.length > 1) {
-    const updatedTeamMembers = [...this.state.newProjectData.teamMembers];
-    updatedTeamMembers.splice(index, 1);
-    this.setState((prevState) => ({
-      newProjectData: {
-        ...prevState.newProjectData,
-        teamMembers: updatedTeamMembers,
-      },
-    }));
-  }
-};
+inviteTeam = async () => {
+  try {
+    const selectedProjectId = this.state.selectedProjectId;
 
-// 이메일 필드의 값 업데이트
-handleEmailChange = (index, value) => {
-  const updatedTeamMembers = [...this.state.newProjectData.teamMembers];
-  updatedTeamMembers[index] = value;
-  this.setState((prevState) => ({
-    newProjectData: {
-      ...prevState.newProjectData,
-      teamMembers: updatedTeamMembers,
-    },
-  }));
+    // Use the correct URL and fix the typo in 'emails'
+    const response = await fetch(`http://localhost:3000/project/${encodeURIComponent(selectedProjectId)}/team`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ emails: this.state.emails }), // Fix the typo here
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to Invite');
+    }
+    // Clear emails and fetch data after a successful invite
+    this.clearEmails();
+    this.fetchData();
+  } catch (error) {
+    console.error('Error Invite:', error);
+  }
 };
 
   handleShowNewProjectModal = () => {
@@ -101,12 +93,12 @@ handleEmailChange = (index, value) => {
     const token = JSON.parse(localStorage.getItem('jwt'));
   
     //팀원 수 설정
-    const teamMembersCount = newProjectData.teamMembers.length + 1; // 1은 자신을 나타냅니다.
+    //const teamMembersCount = newProjectData.teamMembers.length + 1; // 1은 자신을 나타냅니다.
     // 서버로 전송할 데이터 준비
     const dataToSend = {
       projectName: newProjectData.projectName,
-      teamMembers: newProjectData.teamMembers.filter(member => member.trim() !== ''),
-      personnel: teamMembersCount,
+      teamMembers: '',
+      personnel: 1,
     };
   
     // POST 요청을 보내는 옵션 설정
@@ -120,7 +112,7 @@ handleEmailChange = (index, value) => {
     };
   
     // 서버 엔드포인트 URL 설정
-    const serverEndpoint = 'http://localhost:3000/creatProjects';
+    const serverEndpoint = 'http://localhost:3000/project';
   
     fetch(serverEndpoint, requestOptions)
       .then((response) => {
@@ -171,13 +163,10 @@ handleEmailChange = (index, value) => {
           selectedProjectId: storedProjectId || projectId[0] ||'',
           loading: false,
           selectedProjectName:storedProjectName || '',
-          
         },
         ()=>{
           localStorage.setItem('selectedProjectId', JSON.stringify(this.state.selectedProjectId));
           localStorage.setItem('selectedProjectName', JSON.stringify(this.state.selectedProject));
-          console.log('왜안돼',this.state.selectedProject)
-          console.log('왜안돼1',this.state.selectedProjectName)
         });
         
       })
@@ -250,31 +239,13 @@ handleEmailChange = (index, value) => {
         {this.state.showNewProjectModal && (
           <div className="new-project-modal">
             <div className="new-project-content">
-              <p>프로젝트 이름 (필수)</p>
+              <p>프로젝트 이름</p>
               <input
                 type="text"
                 name="projectName"
                 value={this.state.newProjectData.projectName}
                 onChange={this.handleNewProjectDataChange}
               />
-              <p>초대할 팀원의 e-Mail (선택)</p>
-                {this.state.newProjectData.teamMembers.map((email, index) => (
-                  <div key={index}>
-                    <input
-                      type="text"
-                      name={`email-${index}`}
-                      value={email}
-                      onChange={(e) => this.handleEmailChange(index, e.target.value)}
-                    />
-                    {index > 0 && (
-                      <button type="button" class="btn btn-danger btn-sm" onClick={() => this.removeEmailField(index)}>
-                        X
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button type="button"  class="btn btn-info" onClick={this.addEmailField}>팀원+</button>
-
               <div className="modal-btns">
                 <button type="button" class="btn btn-danger" onClick={this.handleCloseNewProjectModal}>닫기</button>
                 <button type="button" class="btn btn-info" onClick={this.handleSaveProjectData}>생성</button>
@@ -283,6 +254,7 @@ handleEmailChange = (index, value) => {
           </div>
         )}
         <div className="header-right">
+        <button type="button" className="btn btn-primary" onClick={this.goToProjectPage}>프로젝트 관리</button>
           {this.state.loggedIn ? (
             <button type="button" className='logout' class="btn btn-danger" onClick={this.goToLoginPage}>Logout</button>
           ) : (
