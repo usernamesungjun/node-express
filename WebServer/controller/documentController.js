@@ -2,6 +2,7 @@ const documentModel = require("../models/documentModel")
 const projectModel = require("../models/projectModel")
 const userModel = require('../models/userModel.js')
 const { v4: uuidv4 } = require('uuid');
+const moment = require('moment-timezone')
 
 exports.createDocument = async (req, res) => {
   const { documentName,projectId } = req.body;
@@ -14,8 +15,9 @@ exports.createDocument = async (req, res) => {
     }
 
     const yorkieName = uuidv4();
+    const registerDate = moment().tz('Asia/Seoul').format()
 
-    const documentId = await documentModel.createDocument(projectId,documentName,yorkieName);
+    const documentId = await documentModel.createDocument(projectId,documentName,yorkieName,registerDate);
     
     res.status(201).json({success: true,documentId: documentId, message: "Document created successfully.",});
   } catch (error) {
@@ -46,5 +48,23 @@ exports.deleteDocument = async (req,res) => {
   } catch (error) {
     console.error("Error deleting document:", error);
     res.status(500).send("Error deleting document");
+  }
+}
+
+exports.getDocument = async (req,res) => {
+  const { projectId } = req.query
+  try {
+    const isProjectExist = await projectModel.isProjectExist(projectId);
+    if (!isProjectExist){
+      return res.status(400).json({ message: "projectId is not found" });
+    }
+
+    const documentData = await documentModel.findByProjectId(projectId)
+    console.log(documentData)
+
+    res.status(200).json(documentData)
+  } catch (error) {
+    console.error("Error get document:", error);
+    res.status(500).send("Error get document");
   }
 }
