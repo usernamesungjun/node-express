@@ -2,10 +2,12 @@ const mysql = require('mysql')
 const util = require('util');
 
 const db = mysql.createConnection({
-  host: '172.30.1.96', //각자 ip주소 검색 cmd -> ipconfig 명령어 입력 -> IPv4 주소 입력
+  host: '14.46.126.22', //각자 ip주소 검색 cmd -> ipconfig 명령어 입력 -> IPv4 주소 입력
+  port : '3306',
   user: 'newuser',
   password: 'user1234',
-  database: 'collaboflow_db'
+  database: 'collaboflow_db',
+  connectionLiimit : 30
 });
 
 db.connect((error) => {
