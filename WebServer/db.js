@@ -2,7 +2,7 @@ const mysql = require('mysql')
 const util = require('util');
 
 const db = mysql.createConnection({
-  host: '127.0.0.1',
+  host: '',
   user: 'collaboflow',
   password: 'collaboflow1234',
   database: 'collaboflow_db'
