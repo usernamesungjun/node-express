@@ -9,7 +9,7 @@ class Sidebar extends React.Component {
     window.location.href = '/project/meeting';
   };
   goToDocumentPage = () => {
-    window.location.href = '/project/document';
+    window.location.href = '/project/dashboard';
   };
   goToSchedulePage = () => {
     window.location.href = '/project/schedule';
