@@ -50,8 +50,6 @@ class Document extends React.Component {
     if (this.state.client) {
       await this.state.client.deactivate();
     }
-
-    // Reset the state
     this.setState({ doc: null, client: null });
   }
 
