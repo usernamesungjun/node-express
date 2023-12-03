@@ -48,6 +48,13 @@ root.render(
             <Document />
           </>
         } />
+        <Route path="/meeting" element={
+            <>
+              <Header />
+              <Slidebar />
+              <Meeting />
+            </>
+          } />
         <Route path="/project" element={
           <>
             <Header />
