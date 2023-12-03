@@ -4,8 +4,8 @@ const util = require('util');
 const db = mysql.createConnection({
   host: '14.46.126.22', 
   port : '3306',
-  user: 'newuser',
-  password: 'user1234',
+  user: 'collaboflow',
+  password: 'user!123',
   database: 'collaboflow_db',
   connectionLiimit : 30
 });
