@@ -11,6 +11,7 @@ import Mypage from './collaboflow/mypage'
 import Document from './collaboflow/document';
 import Project from './collaboflow/project';
 import DashBoard from './collaboflow/dashboard';
+import Meeting from './collaboflow/meeting';
 
 import './index.css'
 import 'popper.js';
@@ -48,7 +49,7 @@ root.render(
             <Document />
           </>
         } />
-        <Route path="/meeting" element={
+        <Route path="/project/meeting" element={
             <>
               <Header />
               <Slidebar />
