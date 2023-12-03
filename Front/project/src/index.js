@@ -7,11 +7,16 @@ import Slidebar from './collaboflow/slidebar';
 import Login from './collaboflow/login';
 import Register from './collaboflow/register';
 import Work from './collaboflow/work';
+
 import Mypage from './collaboflow/mypage'
 import Document from './collaboflow/document';
 import Project from './collaboflow/project';
 import DashBoard from './collaboflow/dashboard';
 import Meeting from './collaboflow/meeting';
+
+
+import './index.css';
+
 
 import './index.css'
 import 'popper.js';
@@ -56,6 +61,7 @@ root.render(
               <Meeting />
             </>
           } />
+
         <Route path="/project" element={
           <>
             <Header />
@@ -70,7 +76,17 @@ root.render(
             <DashBoard />
           </>
         } />
-      </Routes>
+    
+
+          <Route path="/project/meeting" element={
+            <>
+              <Header />
+              <Slidebar />
+              <Meeting />
+            </>
+          } />
+          <Route index element={<Navigate to="/login" />} />
+        </Routes>
     </BrowserRouter>
   </React.StrictMode>
 );

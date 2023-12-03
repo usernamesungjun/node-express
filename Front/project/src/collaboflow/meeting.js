@@ -217,6 +217,7 @@ class Meeting extends React.Component {
     }
   };
 
+
   
   // 피어에게 화면 공유 상태를 알리는 함수
   sendScreenSharingStatusToPeers = (isScreenSharingOn) => {
@@ -235,6 +236,7 @@ class Meeting extends React.Component {
       }
     });
   };
+
   componentDidMount() {
     this.socketRef.current = io.connect(this.SOCKET_SERVER_URL);
     this.getLocalStream();
@@ -344,6 +346,7 @@ class Meeting extends React.Component {
       this.localStreamRef.current.getVideoTracks().forEach((track) => {
         track.enabled = !this.state.isCameraOn;
       });
+
     }
   };
 
@@ -365,8 +368,10 @@ class Meeting extends React.Component {
       message,
       chat,
       isCameraOn,
+
       isMicOn,
       isScreenSharingOn
+
     } = this.state;
 
     return (
@@ -375,18 +380,43 @@ class Meeting extends React.Component {
         <div className="mid">
           <div className="videos">
             {this.localStreamRef.current ? (
+
+
               <div id="MyVideoBox">
+                {isCameraOn ? (
                 <video
-                  className="local-video"
-                  muted
-                  ref={this.localVideoRef}
-                  autoPlay
-                ></video>
-                <button onClick={this.toggleCamera}>
-                  {isCameraOn ? "카메라 끄기" : "카메라 켜기"}
+                className="local-video"
+                muted
+                ref={this.localVideoRef}
+                autoPlay
+              ></video>
+                
+              ) : (
+                <video
+                className="local-video"
+                muted
+                ref={this.localVideoRef}
+                autoPlay
+              ></video>
+              )}
+                
+                <button className="videoBtn" onClick={this.toggleCamera}>
+                  {isCameraOn ? (
+                    <FontAwesomeIcon className="Icon" icon={faVideo} />
+                  ) : (
+                    <FontAwesomeIcon className="Icon" icon={faVideoSlash} />
+                  )}
                 </button>
-                <button onClick={this.toggleMicrophone}>
-                  {isMicOn ? "마이크 끄기" : "마이크 켜기"}
+                <button className="micBtn" onClick={this.toggleMicrophone}>
+                  {isMicOn ? (
+                    <FontAwesomeIcon className="Icon" icon={faMicrophone} />
+                  ) : (
+                    <FontAwesomeIcon
+                      className="Icon"
+                      icon={faMicrophoneSlash}
+                    />
+                  )}
+
                 </button>
                 <button onClick={this.toggleScreenSharing}>
                   {this.state.isScreenSharingOn ? "화면 공유 끄기" : "화면 공유 켜기"}
@@ -394,13 +424,14 @@ class Meeting extends React.Component {
               </div>
             ) : (
               <div id="MyVideoBox">
-                {/* <FontAwesomeIcon className="local-video" icon={faUser} /> */}
+
                 <video
-                  className="local-video"
-                  muted
-                  ref={this.localVideoRef}
-                  autoPlay
-                ></video>
+                className="local-video"
+                muted
+                ref={this.localVideoRef}
+                autoPlay
+              ></video>
+
                 <button className="videoBtn" onClick={this.toggleCamera}>
                   {isCameraOn ? (
                     <FontAwesomeIcon className="Icon" icon={faVideo} />
@@ -426,27 +457,29 @@ class Meeting extends React.Component {
             <div className="remote-videos">
               {users.map((user, index) => {
                 return user.stream.getVideoTracks ? (
+
                   <div className="remote-video">
                   <Video key={index} stream={user.stream} id={user.id} />
                   </div>
+
                 ) : (
                   <FontAwesomeIcon className="local-video" icon={faUser} />
                   );
                 })}
               </div>
             </div>
-            <div>
-            {isScreenSharingOn?<video
-                  className="local-video"
-                  muted
-                  ref={this.sharingVideoRef}
-                  autoPlay
-                ></video>:<div></div>}
+
+            
+            <div className="sharing-video-container">
+            <video className="sharing-video" ref={this.sharingVideoRef} autoPlay></video>
             </div>
-            <div className="chat-container">
+            
+          </div>
+          <div className="chat-container">
               <div className="chat-messages">
-                {chat.map((message, index) => (
-                  <div key={index}>{message}</div>
+                {chat.map((messageObj, index) => (
+                  <div key={index}>{messageObj.message}</div>
+
                 ))}
               </div>
               <form onSubmit={this.sendChat}>
@@ -458,7 +491,7 @@ class Meeting extends React.Component {
                 <button type="submit">Send</button>
               </form>
             </div>
-          </div>
+
           <div className="bottom"></div>
         </div>
       );

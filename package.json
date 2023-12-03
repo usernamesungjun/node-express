@@ -1,8 +1,13 @@
 {
   "dependencies": {
+<<<<<<< HEAD
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "socket.io-client": "^4.7.2",
     "styled-components": "^6.1.1"
+=======
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+>>>>>>> 08242720f6ca523a30312e4b01a52cbd976d69ef
   }
 }
