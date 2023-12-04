@@ -18,17 +18,24 @@ class Meeting extends React.Component {
     this.pc_config = {
       iceServers: [
         {
-          urls: "stun:stun.l.google.com:19302",
+          urls: [
+            "stun:stun.l.google.com:19302",
+            "stun:stun1.l.google.com:19302",
+            "stun:stun2.l.google.com:19302",
+            "stun:stun3.l.google.com:19302",
+            "stun:stun4.l.google.com:19302",
+          ],
         },
       ],
     };
-    this.SOCKET_SERVER_URL = "http://localhost:3030";
+    this.SOCKET_SERVER_URL = "https://port-0-video-conference-prototype-with-webrtc-3yl7k2bloogc04p.sel5.cloudtype.app/";
 
     this.socketRef = React.createRef();
     this.pcsRef = React.createRef();
     this.localVideoRef = React.createRef();
     this.localStreamRef = React.createRef();
-    this.sharingVideoRef = React.createRef();
+    this.sharingVideoRef = {};
+    this.selectedVideoRef = React.createRef();
     
     this.state = {
       users: [],
@@ -36,7 +43,8 @@ class Meeting extends React.Component {
       chat: [],
       isCameraOn: false,
       isMicOn: false,
-      isScreenSharingOn: false
+      isScreenSharingOn: false,
+      selectedVideoStream: null,
     };
   }
 
@@ -50,27 +58,31 @@ class Meeting extends React.Component {
         message: "",
       }));
   
-      // 모든 피어에게 채팅 메시지 전송
       this.sendChatToPeers(message);
     }
   };
   
-  // 피어에게 채팅 메시지를 직접 전송하는 함수
   sendChatToPeers = (message) => {
     const { users } = this.state;
   
-    // 시그널링 서버를 통해 피어에게 채팅 메시지를 전송
     users.forEach((user) => {
       const pc = this.pcsRef.current[user.id];
-      if (pc && pc.connectionState === "connected") {
+      
+    if (pc && pc.connectionState === "connected") {
+        console.log("채팅보냄");
         pc.dataChannel.send(JSON.stringify({ type: "chat", message }));
-      }
-    });
+    }
+    
+      })
+    
+    this.setState((prevState) => ({
+      chat: [...prevState.chat, { message }],
+    }));
   };
   toggleCameraAndScreenSharing = () => {
     this.setState((prevState) => ({
       isCameraOn: !prevState.isCameraOn,
-      isScreenSharingOn: false, // 화면 공유 상태 끄기
+      isScreenSharingOn: false, 
     }));
   
     if (this.localStreamRef.current) {
@@ -85,12 +97,16 @@ class Meeting extends React.Component {
       const localStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: {
-          width: 240,
-          height: 240,
+          width:  240 ,
+          height:  240 ,
         },
       });
 
-      console.log("스트림 성공");
+      if (!this.state.isCameraOn) {
+        localStream.getVideoTracks().forEach((track) => {
+          track.enabled = false;
+        });
+      }
       this.localStreamRef.current = localStream;
       if (this.localVideoRef.current)
         this.localVideoRef.current.srcObject = localStream;
@@ -100,7 +116,6 @@ class Meeting extends React.Component {
         email: "sample@naver.com",
       });
     } catch (e) {
-      console.log("localStreamRef", this.localStreamRef.current);
       console.log(`getUserMedia error: ${e}`);
     }
   };
@@ -112,18 +127,22 @@ class Meeting extends React.Component {
       const dataChannel = pc.createDataChannel("chatChannel");
       dataChannel.onopen = () => console.log("Data channel opened");
       dataChannel.onmessage = (event) => {
+        console.log("데이터 채널 메시지 받음:", event.data);
         const data = JSON.parse(event.data);
         if (data.type === "chat") {
-          // 받은 채팅 메시지 처리
+          console.log("chat받음");
           this.setState((prevState) => ({
             chat: [...prevState.chat, { id: socketID, message: data.message }],
           }));
+        }
+        if(data.type === "screenSharingStatus"){
+          console.log("screenSharing받음");
+          this.setState({ isScreenSharingOn: data.isScreenSharingOn });
         }
       };
 
       pc.onicecandidate = (e) => {
         if (!(this.socketRef.current && e.candidate)) return;
-        console.log("onicecandidate");
         this.socketRef.current.emit("candidate", {
           candidate: e.candidate,
           candidateSendID: this.socketRef.current.id,
@@ -136,7 +155,10 @@ class Meeting extends React.Component {
       };
 
       pc.ontrack = (e) => {
-        console.log("ontrack success");
+        if (!this.pcsRef.current) {
+          console.error('pcsRef is not defined yet.');
+          return;
+        }
         this.setState((prevState) => ({
           users: prevState.users
             .filter((user) => user.id !== socketID)
@@ -146,8 +168,15 @@ class Meeting extends React.Component {
               stream: e.streams[0],
             }),
         }));
+        if (e.streams[0].getVideoTracks().length > 0) {
+          if (!this.sharingVideoRef[socketID]) {
+            this.sharingVideoRef[socketID] = React.createRef();
+          }
+          if (this.sharingVideoRef[socketID].current) {
+            this.sharingVideoRef[socketID].current.srcObject = e.streams[0];
+          }}
       };
-
+      
       if (this.localStreamRef.current) {
         console.log("localstream add");
         this.localStreamRef.current.getTracks().forEach((track) => {
@@ -157,7 +186,7 @@ class Meeting extends React.Component {
       } else {
         console.log("no local stream");
       }
-
+      pc.dataChannel = dataChannel;
       return pc;
     } catch (e) {
       console.error(e);
@@ -166,68 +195,80 @@ class Meeting extends React.Component {
   };
   
   toggleScreenSharing = () => {
-    this.setState((prevState) => ({
-      isScreenSharingOn: !prevState.isScreenSharingOn,
-      isCameraOn: false, // 카메라 상태 끄기
-    }));
+    const displayMediaOptions = {
+      video: true,
+      audio: false,
+    };
   
-    // 화면 공유 트랙을 추가 또는 제거합니다.
-    if (this.localStreamRef.current) {
-      const displayMediaOptions = {
-        video: true,
-        audio: false,
-      };
-  
-      if (this.state.isScreenSharingOn) {
-        navigator.mediaDevices
-          .getDisplayMedia(displayMediaOptions)
-          .then((stream) => {
-            const videoTrack = stream.getVideoTracks()[0];
-            if (!this.localStreamRef.current) return;
-            this.localStreamRef.current
-              .getVideoTracks()
-              .forEach((track) => track.stop());
-            this.localStreamRef.current
-              .removeTrack(this.localStreamRef.current.getVideoTracks()[0]);
-            this.localStreamRef.current.addTrack(videoTrack);
-          if(this.sharingVideoRef.current){
-            this.sharingVideoRef.current.srcObject = stream
+    if (!this.state.isScreenSharingOn) {
+      navigator.mediaDevices
+        .getDisplayMedia(displayMediaOptions)
+        .then((stream) => {
+          const videoTrack = stream.getVideoTracks()[0];
+          if (!this.localStreamRef.current) return;
+          this.localStreamRef.current
+            .getVideoTracks()
+            .forEach((track) => track.stop());
+          this.localStreamRef.current
+            .removeTrack(this.localStreamRef.current.getVideoTracks()[0]);
+          this.localStreamRef.current.addTrack(videoTrack);
+          if (this.sharingVideoRef.current) {
+            this.sharingVideoRef.current.srcObject = stream;
           }
-          })
-          .catch((error) => {
-            console.error("화면 공유 오류:", error);
-          });
-      } else {
-        const videoTrack = this.localStreamRef.current.getVideoTracks()[0];
-        if (!videoTrack) return;
-        videoTrack.stop();
-        this.localStreamRef.current.removeTrack(videoTrack);
-        navigator.mediaDevices
-          .getUserMedia({ video: true, audio: true })
-          .then((stream) => {
-            stream.getTracks().forEach((track) => {
-              if (!this.localStreamRef.current) return;
-              this.localStreamRef.current.addTrack(track);
-            });
-          })
-          .catch((error) => {
-            console.error("로컬 스트림 가져오기 오류:", error);
-          });
-      }
-    }
-  };
 
-
+          Object.values(this.pcsRef.current).forEach((pc) => {
+            pc.addTrack(videoTrack, this.localStreamRef.current);
+          });
   
-  // 피어에게 화면 공유 상태를 알리는 함수
+          this.setState({ isScreenSharingOn: true, isCameraOn: false });
+        })
+        .catch((error) => {
+          console.error("화면 공유 오류:", error);
+        });
+    } else {
+      const videoTrack = this.localStreamRef.current.getVideoTracks()[0];
+      if (!videoTrack) return;
+      videoTrack.stop();
+      this.localStreamRef.current.removeTrack(videoTrack);
+  
+
+      Object.values(this.pcsRef.current).forEach((pc) => {
+        const sender = pc.getSenders().find((sender) => sender.track === videoTrack);
+        if (sender) {
+          pc.removeTrack(sender);
+        }
+      });
+  
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: true })
+        .then((stream) => {
+          stream.getTracks().forEach((track) => {
+            if (!this.localStreamRef.current) return;
+            this.localStreamRef.current.addTrack(track);
+  
+            Object.values(this.pcsRef.current).forEach((pc) => {
+              pc.addTrack(track, this.localStreamRef.current);
+            });
+          });
+  
+          this.setState({ isScreenSharingOn: false, isCameraOn: true });
+        })
+        .catch((error) => {
+          console.error("로컬 스트림 가져오기 오류:", error);
+        });
+    }
+    this.renegotiate();
+  };
+  
   sendScreenSharingStatusToPeers = (isScreenSharingOn) => {
     const { users } = this.state;
   
-    // 모든 피어에게 화면 공유 상태를 전송
     users.forEach((user) => {
       const pc = this.pcsRef.current[user.id];
       if (pc && pc.connectionState === "connected") {
+        console.log("화면공유 보냄");
         pc.dataChannel.send(
+          
           JSON.stringify({
             type: "screenSharingStatus",
             isScreenSharingOn,
@@ -240,6 +281,38 @@ class Meeting extends React.Component {
   componentDidMount() {
     this.socketRef.current = io.connect(this.SOCKET_SERVER_URL);
     this.getLocalStream();
+
+    // 상대방에게 Offer를 받는 부분
+this.socketRef.current.on('sendOfferToPeer', async (data) => {
+  const { offer, senderID } = data;
+
+  // 상대방의 Peer Connection 생성 및 설정
+  const pc = this.createPeerConnection(senderID, 'someEmail');
+  this.pcsRef.current = { ...this.pcsRef.current, [senderID]: pc };
+
+  await pc.setRemoteDescription(new RTCSessionDescription(offer));
+
+  // Answer 생성 및 전송
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(new RTCSessionDescription(answer));
+
+  this.socketRef.current.emit('sendAnswerToPeer', {
+    answer,
+    senderID: this.socketRef.current.id,
+    receiverID: senderID,
+  });
+  });
+  // 상대방에게 Answer를 받는 부분
+this.socketRef.current.on('sendAnswerToPeer', async (data) => {
+  const { answer, senderID } = data;
+
+  // 상대방의 Peer Connection에서 Remote Description 설정
+  const pc = this.pcsRef.current[senderID];
+  if (pc) {
+    await pc.setRemoteDescription(new RTCSessionDescription(answer));
+  }
+  });
+
 
     this.socketRef.current.on("chat message", (data) => {
       const { id, message } = data;
@@ -348,8 +421,22 @@ class Meeting extends React.Component {
       });
 
     }
+    this.renegotiate();
   };
-
+  async renegotiate() {
+    Object.values(this.pcsRef.current).forEach(async (pc) => {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+    
+      
+      this.socketRef.current.emit('sendOfferToPeer', {
+        offer,
+        senderID: this.socketRef.current.id,
+        
+      });
+    });
+  }
+  
   toggleMicrophone = () => {
     this.setState((prevState) => ({
       isMicOn: !prevState.isMicOn,
@@ -361,6 +448,15 @@ class Meeting extends React.Component {
       });
     }
   };
+  handleVideoClick = (stream) => {
+    this.setState({
+      selectedVideoStream: stream,
+    });
+    if (this.selectedVideoRef.current) {
+      this.selectedVideoRef.current.srcObject = stream;
+    }
+  };
+  
 
   render() {
     const {
@@ -368,7 +464,7 @@ class Meeting extends React.Component {
       message,
       chat,
       isCameraOn,
-
+      selectedVideoStream,
       isMicOn,
       isScreenSharingOn
 
@@ -388,6 +484,7 @@ class Meeting extends React.Component {
                 className="local-video"
                 muted
                 ref={this.localVideoRef}
+                onClick={() => this.handleVideoClick(this.localStreamRef.current)}
                 autoPlay
               ></video>
                 
@@ -396,6 +493,7 @@ class Meeting extends React.Component {
                 className="local-video"
                 muted
                 ref={this.localVideoRef}
+                onClick={() => this.handleVideoClick(this.localStreamRef.current)}
                 autoPlay
               ></video>
               )}
@@ -429,6 +527,7 @@ class Meeting extends React.Component {
                 className="local-video"
                 muted
                 ref={this.localVideoRef}
+                onClick={() => this.handleVideoClick(this.localStreamRef.current)}
                 autoPlay
               ></video>
 
@@ -458,8 +557,10 @@ class Meeting extends React.Component {
               {users.map((user, index) => {
                 return user.stream.getVideoTracks ? (
 
-                  <div className="remote-video">
-                  <Video key={index} stream={user.stream} id={user.id} />
+                  <div className="remote-video" key={index}>
+                    
+                  <Video key={index} stream={user.stream} id={user.id}
+                   onClick={() => this.handleVideoClick(user.stream)} />
                   </div>
 
                 ) : (
@@ -471,8 +572,15 @@ class Meeting extends React.Component {
 
             
             <div className="sharing-video-container">
-            <video className="sharing-video" ref={this.sharingVideoRef} autoPlay></video>
-            </div>
+            {this.state.selectedVideoStream && (
+               <video
+               className="sharing-video"
+               ref={this.selectedVideoRef}
+               
+               autoPlay
+             ></video>
+            )}
+              </div>
             
           </div>
           <div className="chat-container">
